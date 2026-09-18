@@ -1,6 +1,6 @@
 import { useMemo, useRef, useEffect, Suspense } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { Splat, OrbitControls, Environment, Float, Stars } from "@react-three/drei";
+import { Splat, OrbitControls, Environment, Float, Stars, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
 import { useWorld, selectObject, type Entity, type TimeOfDay } from "./world";
 import { registerCamera } from "./camera";
@@ -242,6 +242,8 @@ export default function Scene() {
         </group>
         <Environment preset="apartment" />
       </Suspense>
+
+      <ContactShadows position={[0, 0.002, 0]} opacity={0.45} scale={14} blur={2.4} far={4} color="#000000" />
 
       {entities.map((e) => (
         <Prop key={e.id} e={e} onSelect={selectObject} />

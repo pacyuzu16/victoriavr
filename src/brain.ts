@@ -55,12 +55,12 @@ export function runCommand(raw: string) {
   };
 
   // — lighting —
-  if (/\b(dim|darker|lower the lights?|too bright)\b/.test(text)) did(() => tools.setLight(0.15));
-  else if (/\b(bright|lights? on|brighter|full light)\b/.test(text)) did(() => tools.setLight(1));
-  else {
-    const pct = text.match(/lights?\s*(?:to|at)?\s*(\d{1,3})\s*%/);
-    if (pct) did(() => tools.setLight(parseInt(pct[1], 10) / 100));
-  }
+  const pct = text.match(/lights?\s*(?:to|at)?\s*(\d{1,3})\s*%/);
+  if (pct) did(() => tools.setLight(parseInt(pct[1], 10) / 100));
+  else if (/\b(lights? (off|out)|turn off the lights?|blackout)\b/.test(text)) did(() => tools.setLight(0));
+  else if (/\b(dim|dimmer|darker|lower the lights?|too bright)\b/.test(text)) did(() => tools.setLight(0.15));
+  else if (/\b(half|halfway|medium (light|brightness))\b/.test(text)) did(() => tools.setLight(0.5));
+  else if (/\b(bright|brighter|full light|lights? on|lights? up|turn (on|up) the lights?)\b/.test(text)) did(() => tools.setLight(1));
 
   // — time of day —
   const tod = pick(text, {
@@ -73,6 +73,7 @@ export function runCommand(raw: string) {
     morning: "day",
     noon: "day",
     daytime: "day",
+    afternoon: "day",
   } as const);
   if (tod) did(() => tools.setTimeOfDay(tod));
 
@@ -85,7 +86,7 @@ export function runCommand(raw: string) {
   if (/\brain|storm|downpour\b/.test(text)) did(() => tools.setWeather("rain"));
   else if (/\bsnow|snowing|blizzard\b/.test(text)) did(() => tools.setWeather("snow"));
   else if (/\bfog|foggy|mist|misty\b/.test(text)) did(() => tools.setWeather("fog"));
-  else if (/\bsunny|stop the (rain|snow)|clear (sky|skies|weather)|dry\b/.test(text)) did(() => tools.setWeather("clear"));
+  else if (/\bsunny|stop the (rain|snow)|clear (sky|skies|weather)|no (rain|snow|fog)|dry\b/.test(text)) did(() => tools.setWeather("clear"));
 
   // — window —
   if (/\bopen the window|window open\b/.test(text)) did(() => tools.setWindow(true));

@@ -194,6 +194,14 @@ button { font-family: inherit; }
 .mood:active { transform: scale(0.96); }
 
 .hidden { display: none; }
+
+.crash { position: fixed; inset: 0; display: grid; place-items: center; padding: 24px; background: var(--bg); }
+.crash__card {
+  max-width: 420px; text-align: center; padding: 24px; border-radius: 16px;
+  background: var(--panel-solid); border: 1px solid var(--border); box-shadow: var(--shadow); color: var(--text);
+}
+.crash__title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.crash__msg { font-size: 13px; color: var(--dim); line-height: 1.5; margin-bottom: 16px; word-break: break-word; }
 .send { display: grid; place-items: center; min-width: 48px; }
 .mic { display: grid; place-items: center; }
 .panel { z-index: 20; }
