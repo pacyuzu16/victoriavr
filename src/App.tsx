@@ -85,6 +85,7 @@ export default function App() {
   const [showHelp, setShowHelp] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [hint, setHint] = useState(() => !localStorage.getItem("anima-hint"));
+  const [dragOver, setDragOver] = useState(false);
   const recRef = useRef<ReturnType<typeof createRecognition>>(null);
   const splatInputRef = useRef<HTMLInputElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -97,11 +98,14 @@ export default function App() {
   const flash = (m: string) => { setToast(m); window.setTimeout(() => setToast(null), 1800); };
   const dismissHint = () => { setHint(false); localStorage.setItem("anima-hint", "1"); };
 
-  const onPickSplat = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0];
+  const loadSplatFile = (f: File | undefined) => {
     if (!f) return;
+    if (!/\.(splat|ply|ksplat)$/i.test(f.name)) { flash("Please drop a .splat, .ply, or .ksplat file"); return; }
     setHeroSplat(URL.createObjectURL(f));
     flash(`Loaded scene: ${f.name}`);
+  };
+  const onPickSplat = (e: React.ChangeEvent<HTMLInputElement>) => {
+    loadSplatFile(e.target.files?.[0]);
     e.target.value = "";
   };
 
@@ -177,7 +181,13 @@ export default function App() {
   }, []);
 
   return (
-    <div className="app">
+    <div
+      className="app"
+      onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+      onDragLeave={(e) => { if (e.target === e.currentTarget) setDragOver(false); }}
+      onDrop={(e) => { e.preventDefault(); setDragOver(false); loadSplatFile(e.dataTransfer.files?.[0]); }}
+    >
+      {dragOver && <div className="dropzone">Drop a .splat / .ply to load your space</div>}
       <div className="stage">
         <Canvas shadows dpr={[1, 2]} gl={{ preserveDrawingBuffer: true, antialias: true }} camera={{ position: [2.6, 1.6, 3.2], fov: 45 }} onPointerMissed={() => selectObject(null)}>
           <Scene />
