@@ -42,6 +42,7 @@ interface WorldState {
   windowOpen: boolean;
   busy: boolean; // agent is thinking
   selectedId: string | null;
+  heroSplat: string; // URL of the photoreal Gaussian-splat environment
   _undo: Snapshot[];
   _redo: Snapshot[];
 }
@@ -74,10 +75,13 @@ const GLOWING: PropType[] = ["lantern", "candle"];
 export const useWorld = create<WorldState>(() => ({
   ...DEFAULTS,
   selectedId: null,
+  heroSplat: "/nike.splat",
   _undo: [],
   _redo: [],
   log: [{ role: "anima", text: "Hi — I'm Anima. Tell me what to do with this room." }],
 }));
+
+export const setHeroSplat = (url: string) => useWorld.setState({ heroSplat: url });
 
 function log(role: LogRole, text: string) {
   useWorld.setState((s) => ({ log: [...s.log, { role, text }] }));

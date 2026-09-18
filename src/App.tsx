@@ -4,7 +4,7 @@ import Scene from "./Scene";
 import {
   useWorld, perceive, resetWorld, undo, redo, selectObject,
   nudgeSelected, rotateSelected, duplicateSelected, deleteSelected,
-  serializeWorld, restoreWorld, persistScene, loadPersisted,
+  serializeWorld, restoreWorld, persistScene, loadPersisted, setHeroSplat,
 } from "./world";
 import { runCommand } from "./brain";
 import { runCommandLLM } from "./llmBrain";
@@ -15,7 +15,7 @@ import {
   Sun, Moon, RotateCcw, Mic, Send, Wrench, ZoomIn, ZoomOut, ChevronUp, ChevronDown,
   ChevronLeft, ChevronRight, Home, Orbit, Camera, Maximize, Minimize, Info, X,
   Flame, CloudRain, Sunrise, BookOpen, Sparkles, Undo2, Redo2, Share2, Trash2, Copy, RotateCw,
-  PanelRightClose, PanelRightOpen, Gamepad2,
+  PanelRightClose, PanelRightOpen, Gamepad2, Upload,
 } from "lucide-react";
 
 type Brain = "mock" | "claude";
@@ -85,6 +85,7 @@ export default function App() {
   const [showHelp, setShowHelp] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const recRef = useRef<ReturnType<typeof createRecognition>>(null);
+  const splatInputRef = useRef<HTMLInputElement>(null);
 
   const canUndo = useWorld((s) => s._undo.length > 0);
   const canRedo = useWorld((s) => s._redo.length > 0);
@@ -92,6 +93,14 @@ export default function App() {
   const selType = useWorld((s) => s.entities.find((x) => x.id === s.selectedId)?.type);
 
   const flash = (m: string) => { setToast(m); window.setTimeout(() => setToast(null), 1800); };
+
+  const onPickSplat = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    setHeroSplat(URL.createObjectURL(f));
+    flash(`Loaded scene: ${f.name}`);
+    e.target.value = "";
+  };
 
   const submit = (v: string) => {
     if (!v.trim()) return;
@@ -127,6 +136,8 @@ export default function App() {
 
   // restore a shared scene from the URL, else the last local scene, on first load
   useEffect(() => {
+    const sp = new URLSearchParams(location.search).get("splat");
+    if (sp) setHeroSplat(sp);
     const m = location.hash.match(/^#s=(.+)$/);
     if (m && restoreWorld(m[1])) flash("Loaded a shared scene");
     else loadPersisted();
@@ -166,6 +177,8 @@ export default function App() {
       <div className="toolbar">
         <button className="iconbtn" aria-label="Capture photo" title="Capture photo" onClick={capture}><Camera size={17} /></button>
         <button className="iconbtn" aria-label="Share scene" title="Share this scene" onClick={share}><Share2 size={17} /></button>
+        <button className="iconbtn" aria-label="Load your own scene" title="Load a .splat/.ply scene" onClick={() => splatInputRef.current?.click()}><Upload size={17} /></button>
+        <input ref={splatInputRef} type="file" accept=".splat,.ply,.ksplat" onChange={onPickSplat} className="hidden" />
         <button className="iconbtn" aria-label="Fullscreen" title="Fullscreen" onClick={toggleFullscreen}>{isFull ? <Minimize size={17} /> : <Maximize size={17} />}</button>
         <button className="iconbtn" aria-label="Help" title="What can Anima do?" onClick={() => setShowHelp((v) => !v)}><Info size={17} /></button>
       </div>

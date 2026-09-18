@@ -215,7 +215,7 @@ function CameraRig() {
 }
 
 export default function Scene() {
-  const { lightLevel, timeOfDay, weather, entities } = useWorld();
+  const { lightLevel, timeOfDay, weather, entities, heroSplat } = useWorld();
   const foggy = weather === "fog";
 
   return (
@@ -238,7 +238,7 @@ export default function Scene() {
 
       <Suspense fallback={null}>
         <group position={[0, 1.15, 0]} scale={0.5} rotation={[0, Math.PI, 0]}>
-          <Splat src="/nike.splat" />
+          <Splat key={heroSplat} src={heroSplat} />
         </group>
         <Environment preset="apartment" />
       </Suspense>

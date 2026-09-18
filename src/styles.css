@@ -193,6 +193,7 @@ button { font-family: inherit; }
 .mood:hover { background: color-mix(in srgb, var(--accent) 16%, transparent); }
 .mood:active { transform: scale(0.96); }
 
+.hidden { display: none; }
 .send { display: grid; place-items: center; min-width: 48px; }
 .mic { display: grid; place-items: center; }
 .panel { z-index: 20; }
