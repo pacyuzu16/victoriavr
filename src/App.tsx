@@ -227,8 +227,10 @@ export default function App() {
           <ul className="help__list">
             <li>Change <b>lighting</b>, <b>time of day</b> (day/dusk/night), <b>weather</b> (rain/snow/fog/clear)</li>
             <li>Open/close the <b>window</b>, or <b>reset</b> the room</li>
-            <li>Add: lantern, guitar, plant, candle, books, flowers, mug, rug</li>
+            <li>Add: lantern, guitar, plant, candle, books, flowers, mug, rug — say a <b>count</b> too ("add three plants")</li>
+            <li>Say a <b>vibe</b>: "make it spooky / cozy / romantic / dramatic"</li>
             <li><b>Click any object</b> to move, rotate, duplicate or delete it</li>
+            <li>Load your own space via <b>Upload</b> (top-left) — see HERO-SCENE.md</li>
             <li>Tap a <b>mood</b> for an instant scene · <b>Undo/redo</b> anything · <b>Share</b> a link to your exact world</li>
             <li><b>Mock</b> works offline; <b>Claude</b> is the real tool-calling brain</li>
             <li>Drag to orbit · scroll / pinch to zoom · or use the on-screen rig</li>

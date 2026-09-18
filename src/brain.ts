@@ -141,8 +141,9 @@ export function runCommand(raw: string) {
   } else {
     say(
       "I can change the lights, time of day (day/dusk/night), weather (rain/snow/fog/clear), " +
-        "open/close the window, reset the room, or add/move/remove a lantern, guitar, plant, candle, " +
-        "books, or flowers. Try: “dim the lights and light a candle.”"
+        "open/close the window, or reset the room. Add a lantern, guitar, plant, candle, books, " +
+        "flowers, mug, or rug — even a few at once (“add three plants”). Or just set a vibe: " +
+        "“make it spooky”, “make it cozy”. Try: “dim the lights and light a candle.”"
     );
   }
 }
