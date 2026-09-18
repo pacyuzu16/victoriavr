@@ -233,7 +233,7 @@ export default function App() {
         <button className="grip" aria-label="Close panel" onClick={() => setPanelOpen(false)} />
 
         <div className="top">
-          <div className="brand">Anima <small>spike-world</small></div>
+          <div className="brand">Anima <small>living worlds</small></div>
           <div className="spacer" />
           <button className="iconbtn" aria-label="Undo" title="Undo (⌘Z)" disabled={!canUndo} onClick={() => undo()}><Undo2 size={17} /></button>
           <button className="iconbtn" aria-label="Redo" title="Redo (⇧⌘Z)" disabled={!canRedo} onClick={() => redo()}><Redo2 size={17} /></button>
