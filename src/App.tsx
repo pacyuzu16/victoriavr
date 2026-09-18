@@ -87,6 +87,7 @@ export default function App() {
   const [hint, setHint] = useState(() => !localStorage.getItem("anima-hint"));
   const recRef = useRef<ReturnType<typeof createRecognition>>(null);
   const splatInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const canUndo = useWorld((s) => s._undo.length > 0);
   const canRedo = useWorld((s) => s._redo.length > 0);
@@ -164,6 +165,12 @@ export default function App() {
       else if (mod && e.key.toLowerCase() === "y") { e.preventDefault(); redo(); }
       else if (e.key === "Delete" || e.key === "Backspace") deleteSelected();
       else if (e.key === "Escape") selectObject(null);
+      else if (!mod && e.key >= "1" && e.key <= "5") applyMood(MOODS[+e.key - 1].name);
+      else if (!mod && e.key.toLowerCase() === "c") capture();
+      else if (!mod && e.key.toLowerCase() === "f") toggleFullscreen();
+      else if (!mod && e.key.toLowerCase() === "r") resetWorld();
+      else if (!mod && e.key === "?") setShowHelp((v) => !v);
+      else if (!mod && e.key === "/") { e.preventDefault(); inputRef.current?.focus(); }
     };
     window.addEventListener("keydown", key);
     return () => { document.removeEventListener("fullscreenchange", fs); window.removeEventListener("keydown", key); };
@@ -244,6 +251,7 @@ export default function App() {
             <li>Tap a <b>mood</b> for an instant scene · <b>Undo/redo</b> anything · <b>Share</b> a link to your exact world</li>
             <li><b>Mock</b> works offline; <b>Claude</b> is the real tool-calling brain</li>
             <li>Drag to orbit · scroll / pinch to zoom · or use the on-screen rig</li>
+            <li><b>Keyboard:</b> 1–5 moods · C capture · F fullscreen · R reset · / focus · ? help · ⌘Z undo</li>
           </ul>
         </div>
       )}
@@ -294,7 +302,7 @@ export default function App() {
           {speechSupported() && (
             <button type="button" className={`mic${listening ? " mic--on" : ""}`} onClick={toggleMic} aria-label="Speak to Anima" title="Speak to Anima"><Mic size={18} /></button>
           )}
-          <input className="field" value={text} onChange={(e) => setText(e.target.value)} placeholder={brain === "claude" ? "talk to Anima…" : "tell Anima what to do…"} />
+          <input ref={inputRef} className="field" value={text} onChange={(e) => setText(e.target.value)} placeholder={brain === "claude" ? "talk to Anima…" : "tell Anima what to do…"} />
           <button className="send" type="submit" aria-label="Send"><Send size={18} /></button>
         </form>
       </div>
