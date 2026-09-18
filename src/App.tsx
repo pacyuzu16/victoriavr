@@ -11,11 +11,12 @@ import { runCommandLLM } from "./llmBrain";
 import { createRecognition, speechSupported } from "./speech";
 import { cam } from "./camera";
 import { applyMood, type MoodName } from "./presets";
+import { toggleAmbience, setAmbienceWeather } from "./sound";
 import {
   Sun, Moon, RotateCcw, Mic, Send, Wrench, ZoomIn, ZoomOut, ChevronUp, ChevronDown,
   ChevronLeft, ChevronRight, Home, Orbit, Camera, Maximize, Minimize, Info, X,
   Flame, CloudRain, Sunrise, BookOpen, Sparkles, Undo2, Redo2, Share2, Trash2, Copy, RotateCw,
-  PanelRightClose, PanelRightOpen, Gamepad2, Upload,
+  PanelRightClose, PanelRightOpen, Gamepad2, Upload, Volume2, VolumeX,
 } from "lucide-react";
 
 type Brain = "mock" | "claude";
@@ -86,6 +87,8 @@ export default function App() {
   const [toast, setToast] = useState<string | null>(null);
   const [hint, setHint] = useState(() => !localStorage.getItem("anima-hint"));
   const [dragOver, setDragOver] = useState(false);
+  const [soundOn, setSoundOn] = useState(false);
+  const weather = useWorld((s) => s.weather);
   const recRef = useRef<ReturnType<typeof createRecognition>>(null);
   const splatInputRef = useRef<HTMLInputElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -151,6 +154,9 @@ export default function App() {
     else loadPersisted();
   }, []);
 
+  // keep ambience in sync with the weather while sound is on
+  useEffect(() => { if (soundOn) setAmbienceWeather(weather); }, [weather, soundOn]);
+
   // auto-save the scene to localStorage (debounced) so a refresh keeps it
   useEffect(() => {
     let t: number;
@@ -200,6 +206,7 @@ export default function App() {
         <button className="iconbtn" aria-label="Load your own scene" title="Load a .splat/.ply scene" onClick={() => splatInputRef.current?.click()}><Upload size={17} /></button>
         <input ref={splatInputRef} type="file" accept=".splat,.ply,.ksplat" onChange={onPickSplat} className="hidden" />
         <button className="iconbtn" aria-label="Fullscreen" title="Fullscreen" onClick={toggleFullscreen}>{isFull ? <Minimize size={17} /> : <Maximize size={17} />}</button>
+        <button className="iconbtn" aria-label="Ambient sound" title="Ambient sound" onClick={() => setSoundOn(toggleAmbience(!soundOn, weather))}>{soundOn ? <Volume2 size={17} /> : <VolumeX size={17} />}</button>
         <button className="iconbtn" aria-label="Help" title="What can Anima do?" onClick={() => setShowHelp((v) => !v)}><Info size={17} /></button>
       </div>
 
