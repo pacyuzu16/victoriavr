@@ -115,7 +115,11 @@ export function runCommand(raw: string) {
 
   // — spawn (supports "add a lantern and a plant") —
   if (/\b(add|spawn|bring|place|put|give me|i want)\b/.test(text)) {
-    for (const p of PROPS) if (text.includes(p)) did(() => tools.spawnObject(p));
+    for (const p of PROPS)
+      if (text.includes(p)) {
+        const n = countFor(text, p);
+        did(() => { for (let i = 0; i < n; i++) tools.spawnObject(p); });
+      }
   }
 
   // — Anima's spoken reply, grounded in what she now perceives —
