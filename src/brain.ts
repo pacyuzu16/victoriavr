@@ -54,6 +54,18 @@ export function runCommand(raw: string) {
     acted = true;
   };
 
+  // — vibes (natural mood phrases; applied first so explicit clauses can still override) —
+  const vibe = pick(text, {
+    spooky: () => { tools.setTimeOfDay("night"); tools.setWeather("fog"); tools.setLight(0.1); tools.spawnObject("candle"); },
+    romantic: () => { tools.setTimeOfDay("dusk"); tools.setLight(0.2); tools.spawnObject("candle"); tools.spawnObject("flowers"); },
+    cozy: () => { tools.setTimeOfDay("dusk"); tools.setLight(0.25); tools.spawnObject("candle"); },
+    dramatic: () => { tools.setTimeOfDay("night"); tools.setWeather("rain"); tools.setLight(0.3); },
+    peaceful: () => { tools.setTimeOfDay("day"); tools.setWeather("clear"); tools.setLight(0.8); tools.spawnObject("plant"); },
+    calm: () => { tools.setTimeOfDay("day"); tools.setWeather("clear"); tools.setLight(0.8); },
+    energizing: () => { tools.setTimeOfDay("day"); tools.setLight(1); },
+  } as Record<string, () => void>);
+  if (vibe) did(vibe);
+
   // — lighting —
   const pct = text.match(/lights?\s*(?:to|at)?\s*(\d{1,3})\s*%/);
   if (pct) did(() => tools.setLight(parseInt(pct[1], 10) / 100));
@@ -136,6 +148,10 @@ export function runCommand(raw: string) {
 }
 
 function reply(text: string): string {
+  if (text.includes("spooky")) return "Setting a spooky mood — fog and candlelight.";
+  if (text.includes("romantic")) return "Something romantic — soft light, candle, flowers.";
+  if (text.includes("cozy")) return "Making it cozy.";
+  if (text.includes("dramatic")) return "Turning up the drama.";
   if (text.includes("dim")) return "Dimming the lights for you.";
   if (text.includes("night")) return "Bringing on the night.";
   if (text.includes("rain")) return "Letting the rain roll in.";
