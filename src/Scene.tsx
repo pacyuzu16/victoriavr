@@ -1,6 +1,7 @@
 import { useMemo, useRef, useEffect, Suspense } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Splat, OrbitControls, Environment, Float, Stars, ContactShadows } from "@react-three/drei";
+import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { useWorld, selectObject, type Entity, type TimeOfDay } from "./world";
 import { registerCamera } from "./camera";
@@ -282,6 +283,10 @@ export default function Scene() {
 
       <OrbitControls makeDefault enableDamping enablePan enableZoom target={[0, 0.2, 0]} minDistance={1.3} maxDistance={14} />
       <CameraRig />
+
+      <EffectComposer>
+        <Bloom mipmapBlur luminanceThreshold={0.9} luminanceSmoothing={0.2} intensity={0.55} />
+      </EffectComposer>
     </>
   );
 }
