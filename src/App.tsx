@@ -84,6 +84,7 @@ export default function App() {
   const [isFull, setIsFull] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [hint, setHint] = useState(() => !localStorage.getItem("anima-hint"));
   const recRef = useRef<ReturnType<typeof createRecognition>>(null);
   const splatInputRef = useRef<HTMLInputElement>(null);
 
@@ -93,6 +94,7 @@ export default function App() {
   const selType = useWorld((s) => s.entities.find((x) => x.id === s.selectedId)?.type);
 
   const flash = (m: string) => { setToast(m); window.setTimeout(() => setToast(null), 1800); };
+  const dismissHint = () => { setHint(false); localStorage.setItem("anima-hint", "1"); };
 
   const onPickSplat = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -104,6 +106,7 @@ export default function App() {
 
   const submit = (v: string) => {
     if (!v.trim()) return;
+    if (hint) dismissHint();
     if (brain === "claude") runCommandLLM(v); else runCommand(v);
     setText("");
   };
@@ -220,6 +223,13 @@ export default function App() {
       )}
 
       {toast && <div className="toast">{toast}</div>}
+
+      {hint && !selectedId && (
+        <div className="hintbar">
+          <span>Tell Anima what to do — try a mood, tap the mic, or type "make it cozy".</span>
+          <button className="iconbtn" aria-label="Dismiss hint" onClick={dismissHint}><X size={15} /></button>
+        </div>
+      )}
 
       {showHelp && (
         <div className="help" role="dialog">

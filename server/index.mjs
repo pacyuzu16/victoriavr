@@ -24,7 +24,7 @@ const tools = [
   { name: "set_weather", description: "Set the weather.",
     input_schema: { type: "object", properties: { weather: { type: "string", enum: ["clear", "rain", "snow", "fog"] } }, required: ["weather"] } },
   { name: "spawn_object", description: "Place an object on/near the table.",
-    input_schema: { type: "object", properties: { type: { type: "string", enum: ["lantern", "guitar", "plant", "candle", "books", "flowers", "mug", "rug"] } }, required: ["type"] } },
+    input_schema: { type: "object", properties: { type: { type: "string", enum: ["lantern", "guitar", "plant", "candle", "books", "flowers", "mug", "rug", "lamp", "cushion"] } }, required: ["type"] } },
   { name: "move_last_object", description: "Nudge the most recently placed object in a direction.",
     input_schema: { type: "object", properties: { direction: { type: "string", enum: ["left", "right", "forward", "back"] } }, required: ["direction"] } },
   { name: "remove_last_object", description: "Remove the most recently placed object.",

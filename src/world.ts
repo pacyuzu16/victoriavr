@@ -5,11 +5,11 @@ import { create } from "zustand";
 // reads and the agent's TOOLS write. Perception reads from it too.)
 // ─────────────────────────────────────────────────────────────────────────────
 
-export type PropType = "lantern" | "guitar" | "plant" | "candle" | "books" | "flowers" | "mug" | "rug";
+export type PropType = "lantern" | "guitar" | "plant" | "candle" | "books" | "flowers" | "mug" | "rug" | "lamp" | "cushion";
 export type TimeOfDay = "day" | "dusk" | "night";
 export type Weather = "clear" | "rain" | "snow" | "fog";
 
-export const PROP_TYPES: PropType[] = ["lantern", "guitar", "plant", "candle", "books", "flowers", "mug", "rug"];
+export const PROP_TYPES: PropType[] = ["lantern", "guitar", "plant", "candle", "books", "flowers", "mug", "rug", "lamp", "cushion"];
 
 export interface Entity {
   id: string;
@@ -68,9 +68,11 @@ const PROP_LABEL: Record<PropType, string> = {
   flowers: "a vase of flowers",
   mug: "a steaming mug",
   rug: "a woven rug",
+  lamp: "a warm lamp",
+  cushion: "a soft cushion",
 };
 
-const GLOWING: PropType[] = ["lantern", "candle"];
+const GLOWING: PropType[] = ["lantern", "candle", "lamp"];
 
 export const useWorld = create<WorldState>(() => ({
   ...DEFAULTS,
