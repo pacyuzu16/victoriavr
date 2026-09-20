@@ -290,7 +290,7 @@ export default function App() {
             <li><b>Click any object</b> to move, rotate, duplicate or delete it</li>
             <li>Load your own space via <b>Upload</b> (top-left) — see HERO-SCENE.md</li>
             <li>Tap a <b>mood</b> for an instant scene · <b>Undo/redo</b> anything · <b>Share</b> a link to your exact world</li>
-            <li><b>Mock</b> works offline; <b>Claude</b> is the real tool-calling brain</li>
+            <li>Brains: <b>Mock</b> (offline), <b>Claude</b> (needs a key), <b>On-device</b> (a real LLM in your browser via WebGPU — free, no server)</li>
             <li>Drag to orbit · scroll / pinch to zoom · or use the on-screen rig</li>
             <li><b>Keyboard:</b> 1–5 moods · C capture · F fullscreen · R reset · / focus · ? help · ⌘Z undo</li>
           </ul>
