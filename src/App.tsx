@@ -4,7 +4,7 @@ import Scene from "./Scene";
 import {
   useWorld, perceive, resetWorld, undo, redo, selectObject,
   nudgeSelected, rotateSelected, duplicateSelected, deleteSelected,
-  serializeWorld, restoreWorld, persistScene, loadPersisted, setHeroSplat,
+  serializeWorld, restoreWorld, persistScene, loadPersisted, setHeroSplat, say,
 } from "./world";
 import { runCommand } from "./brain";
 import { runCommandLLM } from "./llmBrain";
@@ -12,6 +12,7 @@ import { createRecognition, speechSupported } from "./speech";
 import { cam } from "./camera";
 import { applyMood, type MoodName } from "./presets";
 import { toggleAmbience, setAmbienceWeather } from "./sound";
+import { webgpuAvailable, initOnDevice, runCommandOnDevice } from "./webllm";
 import {
   Sun, Moon, RotateCcw, Mic, Send, Wrench, ZoomIn, ZoomOut, ChevronUp, ChevronDown,
   ChevronLeft, ChevronRight, Home, Orbit, Camera, Maximize, Minimize, Info, X,
@@ -19,7 +20,8 @@ import {
   PanelRightClose, PanelRightOpen, Gamepad2, Upload, Volume2, VolumeX,
 } from "lucide-react";
 
-type Brain = "mock" | "claude";
+type Brain = "mock" | "claude" | "device";
+const BRAIN_LABEL: Record<Brain, string> = { mock: "Mock", claude: "Claude", device: "On-device" };
 
 const CHIPS = [
   "dim the lights", "make it night and let it snow", "add a candle and books",
@@ -88,6 +90,8 @@ export default function App() {
   const [hint, setHint] = useState(() => !localStorage.getItem("anima-hint"));
   const [dragOver, setDragOver] = useState(false);
   const [soundOn, setSoundOn] = useState(false);
+  const [deviceStatus, setDeviceStatus] = useState<string | null>(null);
+  const [engineReady, setEngineReady] = useState(false);
   const weather = useWorld((s) => s.weather);
   const recRef = useRef<ReturnType<typeof createRecognition>>(null);
   const splatInputRef = useRef<HTMLInputElement>(null);
@@ -115,8 +119,27 @@ export default function App() {
   const submit = (v: string) => {
     if (!v.trim()) return;
     if (hint) dismissHint();
-    if (brain === "claude") runCommandLLM(v); else runCommand(v);
+    if (brain === "claude") runCommandLLM(v);
+    else if (brain === "device") runCommandOnDevice(v);
+    else runCommand(v);
     setText("");
+  };
+
+  const chooseBrain = (b: Brain) => {
+    setBrain(b);
+    if (b === "device" && !engineReady) {
+      if (!webgpuAvailable()) {
+        setBrain("mock");
+        flash("On-device AI needs WebGPU (Chrome/Edge on a modern GPU). Using the offline brain.");
+        return;
+      }
+      setDeviceStatus("Loading on-device AI… (first run downloads a small model)");
+      initOnDevice((m) => setDeviceStatus(m)).then((ok) => {
+        setDeviceStatus(null);
+        if (ok) { setEngineReady(true); say("On-device AI ready — talk to me."); }
+        else { setBrain("mock"); flash("Couldn't start on-device AI. Using the offline brain."); }
+      });
+    }
   };
 
   const toggleMic = () => {
@@ -247,6 +270,7 @@ export default function App() {
       )}
 
       {toast && <div className="toast">{toast}</div>}
+      {deviceStatus && <div className="toast toast--status">{deviceStatus}</div>}
 
       {hint && !selectedId && (
         <div className="hintbar">
@@ -295,9 +319,9 @@ export default function App() {
         <div className="sub">natural language → tool calls → live world change</div>
 
         <div className="segmented">
-          {(["mock", "claude"] as Brain[]).map((b) => (
-            <button key={b} className={`seg${brain === b ? " seg--on" : ""}`} onClick={() => setBrain(b)}>
-              {b === "mock" ? "Mock · offline" : "Claude · real"}
+          {(["mock", "claude", "device"] as Brain[]).map((b) => (
+            <button key={b} className={`seg${brain === b ? " seg--on" : ""}`} onClick={() => chooseBrain(b)}>
+              {BRAIN_LABEL[b]}
             </button>
           ))}
         </div>

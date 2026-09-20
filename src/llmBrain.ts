@@ -11,7 +11,7 @@ const DIRS: Record<string, [number, number, number]> = {
   left: [-0.6, 0, 0], right: [0.6, 0, 0], forward: [0, 0, -0.6], back: [0, 0, 0.6],
 };
 
-function executeTool(name: string, input: any) {
+export function executeTool(name: string, input: any) {
   switch (name) {
     case "set_light": return tools.setLight(Number(input?.level ?? 1));
     case "set_time_of_day": return tools.setTimeOfDay(input?.time);

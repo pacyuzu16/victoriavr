@@ -1,8 +1,9 @@
 import { Component, type ReactNode } from "react";
 
 // Keeps a stray runtime error from blanking the whole app during a live demo —
-// shows a friendly recovery card instead.
-export class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
+// shows a friendly recovery card by default, or a custom `fallback` (e.g. null inside
+// the 3D Canvas, so one bad object degrades gracefully instead of crashing everything).
+export class ErrorBoundary extends Component<{ children: ReactNode; fallback?: ReactNode }, { error: Error | null }> {
   state = { error: null as Error | null };
 
   static getDerivedStateFromError(error: Error) {
@@ -14,6 +15,7 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, { error: E
 
   render() {
     if (this.state.error) {
+      if (this.props.fallback !== undefined) return this.props.fallback;
       return (
         <div className="crash">
           <div className="crash__card">

@@ -5,6 +5,7 @@ import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { useWorld, selectObject, type Entity, type TimeOfDay } from "./world";
 import { registerCamera } from "./camera";
+import { ErrorBoundary } from "./ErrorBoundary";
 
 const SKY: Record<TimeOfDay, string> = { day: "#8fb7e6", dusk: "#e88a4e", night: "#0c1330" };
 const LIGHTTINT: Record<TimeOfDay, string> = { day: "#fff6e8", dusk: "#ffb27a", night: "#9fb2ff" };
@@ -263,9 +264,12 @@ export default function Scene() {
       </mesh>
 
       <Suspense fallback={null}>
-        <group position={[0, 1.15, 0]} scale={0.5} rotation={[0, Math.PI, 0]}>
-          <Splat key={heroSplat} src={heroSplat} />
-        </group>
+        {/* a bad/corrupt splat (e.g. a user upload) degrades to no-hero instead of crashing */}
+        <ErrorBoundary key={heroSplat} fallback={null}>
+          <group position={[0, 1.15, 0]} scale={0.5} rotation={[0, Math.PI, 0]}>
+            <Splat src={heroSplat} />
+          </group>
+        </ErrorBoundary>
         <Environment preset="apartment" />
       </Suspense>
 
