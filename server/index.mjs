@@ -54,7 +54,7 @@ const server = createServer((req, res) => {
   let body = "";
   req.on("data", (c) => (body += c));
   req.on("end", async () => {
-    if (!client) return send(res, 503, { error: "No ANTHROPIC_API_KEY set on the server — add a fresh key to spikes/spike-world/.env and restart `npm run server`." });
+    if (!client) return send(res, 503, { error: "No ANTHROPIC_API_KEY set on the server — copy .env.example to .env, add a fresh key, and restart `npm run server`." });
     let messages;
     try { messages = JSON.parse(body).messages; } catch { return send(res, 400, { error: "bad JSON" }); }
     try {

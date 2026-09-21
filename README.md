@@ -8,11 +8,15 @@ You speak, and the world changes. Not a scene generator you watch, a world that 
 
 Built for the **Victoria VR AI Builder Hackathon 2026**.
 
+- **Repository:** https://github.com/pacyuzu16/victoriavr
+- **Live demo:** _(deploying — see [DEPLOY.md](DEPLOY.md))_
+- **Competition:** https://www.kaggle.com/competitions/ai-builder-hackathon-2026
+
 ## Run it
 
 ```bash
 npm install
-npm run dev            # app on http://localhost:5182
+npm run dev            # app on http://localhost:5183
 npm run server         # optional: real Claude brain proxy (needs a key in .env)
 ```
 
@@ -22,6 +26,9 @@ Claude brain, copy `.env.example` to `.env`, add a key, and run `npm run server`
 ## Highlights
 - Natural language → validated tool calls → live 3D change, with grounded perception
 - Photoreal Gaussian-splat environment + interactive PBR props
+- **Three switchable AI brains:** *On-device* (a real LLM in the browser via WebGPU/WebLLM — free,
+  no server, private), *Claude* (best-quality tool-calling via a key-holding local proxy), and
+  *Mock* (a fast offline parser, so the demo always works with zero setup)
 - Browser-native voice (speech in and out), mood presets, undo/redo, click-to-select editing,
   shareable scene links, auto-persist, light/dark, mobile-first, on-screen camera rig
 
