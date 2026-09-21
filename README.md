@@ -8,8 +8,8 @@ You speak, and the world changes. Not a scene generator you watch, a world that 
 
 Built for the **Victoria VR AI Builder Hackathon 2026**.
 
+- **Live demo:** https://victoriavr-liard.vercel.app/
 - **Repository:** https://github.com/pacyuzu16/victoriavr
-- **Live demo:** _(deploying — see [DEPLOY.md](DEPLOY.md))_
 - **Competition:** https://www.kaggle.com/competitions/ai-builder-hackathon-2026
 
 ## Run it
