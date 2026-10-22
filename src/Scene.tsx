@@ -1,4 +1,4 @@
-import { useMemo, useRef, useEffect, Suspense } from "react";
+import { useMemo, useRef, useEffect, useState, Suspense } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Splat, OrbitControls, Environment, Float, Stars, ContactShadows } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
@@ -246,6 +246,31 @@ function Precip({ color, speed, size, drift }: { color: string; speed: number; s
   );
 }
 
+// The photoreal hero environment. The splat is a large download, so a transient
+// network failure shouldn't permanently blank it: on error we retry a couple of
+// times before gracefully degrading to no-hero. A fresh src resets the retries.
+function HeroSplat({ src }: { src: string }) {
+  const [nonce, setNonce] = useState(0);
+  const tries = useRef(0);
+  useEffect(() => { tries.current = 0; setNonce(0); }, [src]);
+  return (
+    <ErrorBoundary
+      key={`${src}#${nonce}`}
+      fallback={null}
+      onError={() => {
+        if (tries.current < 2) {
+          tries.current++;
+          window.setTimeout(() => setNonce((n) => n + 1), 1200);
+        }
+      }}
+    >
+      <group position={[0, 1.15, 0]} scale={0.5} rotation={[0, Math.PI, 0]}>
+        <Splat src={src} />
+      </group>
+    </ErrorBoundary>
+  );
+}
+
 function CameraRig() {
   const camera = useThree((s) => s.camera);
   const controls = useThree((s) => s.controls) as any;
@@ -302,12 +327,9 @@ export default function Scene() {
       </mesh>
 
       <Suspense fallback={null}>
-        {/* a bad/corrupt splat (e.g. a user upload) degrades to no-hero instead of crashing */}
-        <ErrorBoundary key={heroSplat} fallback={null}>
-          <group position={[0, 1.15, 0]} scale={0.5} rotation={[0, Math.PI, 0]}>
-            <Splat src={heroSplat} />
-          </group>
-        </ErrorBoundary>
+        {/* a bad/corrupt splat (e.g. a user upload) degrades to no-hero instead of
+            crashing; a transient network failure retries before giving up */}
+        <HeroSplat src={heroSplat} />
         <Environment preset="apartment" />
       </Suspense>
 
