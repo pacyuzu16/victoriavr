@@ -26,11 +26,17 @@ Claude brain, copy `.env.example` to `.env`, add a key, and run `npm run server`
 ## Highlights
 - Natural language → validated tool calls → live 3D change, with grounded perception
 - Photoreal Gaussian-splat environment + interactive PBR props
+- **Director Mode** — a signature, self-running cinematic that drives the *real* natural-language
+  pipeline hands-free (press <kbd>D</kbd>, or "Watch Anima build"). The unfakeable wow — and a
+  bulletproof live-demo safety net
 - **Three switchable AI brains:** *On-device* (a real LLM in the browser via WebGPU/WebLLM — free,
   no server, private), *Claude* (best-quality tool-calling via a key-holding local proxy), and
   *Mock* (a fast offline parser, so the demo always works with zero setup)
+- A living **presence** (Anima's orb reacts as she thinks/speaks) and a **perception HUD** that
+  shows her grounded senses as live vitals — plus **context-aware suggestions** that read the room
+- **Scene gallery** — save, name and reload whole worlds; **share** a link to your exact scene
 - Browser-native voice (speech in and out), mood presets, undo/redo, click-to-select editing,
-  shareable scene links, auto-persist, light/dark, mobile-first, on-screen camera rig
+  auto-persist, light/dark, mobile-first, on-screen camera rig, cinematic onboarding
 
 ## Build timeline (integrity note)
 This submission is developed within the official build window (Sep 11 – Nov 11, 2026), tracked in
