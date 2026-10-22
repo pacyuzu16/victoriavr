@@ -246,26 +246,44 @@ function Precip({ color, speed, size, drift }: { color: string; speed: number; s
   );
 }
 
-// The photoreal hero environment. The splat is a large download, so a transient
-// network failure shouldn't permanently blank it: on error we retry a couple of
-// times before gracefully degrading to no-hero. A fresh src resets the retries.
+// The photoreal hero environment. We fetch the splat ourselves into a blob URL
+// before handing it to the loader. This mirrors the (already-working) user-upload
+// path and sidesteps host quirks — e.g. a CDN that serves the file without a
+// Content-Length header, which the streaming splat loader needs. blob:/data: URLs
+// are already local, so they pass straight through. Bounded retry on failure, then
+// graceful degradation to no-hero (never a crash).
 function HeroSplat({ src }: { src: string }) {
+  const [resolved, setResolved] = useState<string | null>(null);
   const [nonce, setNonce] = useState(0);
   const tries = useRef(0);
-  useEffect(() => { tries.current = 0; setNonce(0); }, [src]);
+
+  useEffect(() => {
+    tries.current = 0;
+    if (src.startsWith("blob:") || src.startsWith("data:")) { setResolved(src); return; }
+    let cancelled = false;
+    let objUrl: string | null = null;
+    const load = (attempt: number) => {
+      fetch(src)
+        .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.blob(); })
+        .then((b) => { if (cancelled) return; objUrl = URL.createObjectURL(b); setResolved(objUrl); })
+        .catch(() => { if (!cancelled && attempt < 2) window.setTimeout(() => load(attempt + 1), 1000); });
+    };
+    setResolved(null);
+    load(0);
+    return () => { cancelled = true; if (objUrl) URL.revokeObjectURL(objUrl); };
+  }, [src]);
+
+  if (!resolved) return null;
   return (
     <ErrorBoundary
-      key={`${src}#${nonce}`}
+      key={`${resolved}#${nonce}`}
       fallback={null}
       onError={() => {
-        if (tries.current < 2) {
-          tries.current++;
-          window.setTimeout(() => setNonce((n) => n + 1), 1200);
-        }
+        if (tries.current < 2) { tries.current++; window.setTimeout(() => setNonce((n) => n + 1), 1000); }
       }}
     >
       <group position={[0, 1.15, 0]} scale={0.5} rotation={[0, Math.PI, 0]}>
-        <Splat src={src} />
+        <Splat src={resolved} />
       </group>
     </ErrorBoundary>
   );
