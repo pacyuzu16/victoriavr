@@ -145,6 +145,44 @@ function Prop({ e, onSelect }: { e: Entity; onSelect: (id: string) => void }) {
   }
 }
 
+// A standing window that visibly reacts to the world's windowOpen state — the sash
+// swings ajar, closing the loop between "open the window" (tool) and what you see.
+function Window({ open, tint }: { open: boolean; tint: string }) {
+  const sash = useRef<THREE.Group>(null!);
+  const W = 0.62, H = 1.3, T = 0.05;
+  useFrame((_, dt) => {
+    if (!sash.current) return;
+    const target = open ? -1.15 : 0;
+    sash.current.rotation.y += (target - sash.current.rotation.y) * Math.min(1, dt * 5);
+  });
+  const Bar = (p: [number, number, number], a: [number, number, number]) => (
+    <mesh position={p} castShadow><boxGeometry args={a} /><meshStandardMaterial color="#6b4a2f" roughness={0.6} /></mesh>
+  );
+  const glass = (
+    <meshPhysicalMaterial color={tint} roughness={0.08} metalness={0} transmission={0.6} transparent opacity={0.34} thickness={0.1} side={THREE.DoubleSide} />
+  );
+  return (
+    <group position={[-1.75, 0.92, -1.15]} rotation={[0, 0.62, 0]}>
+      {/* outer frame */}
+      {Bar([0, H / 2, 0], [2 * W + 0.1, T, T])}
+      {Bar([0, -H / 2, 0], [2 * W + 0.1, T, T])}
+      {Bar([-W - 0.025, 0, 0], [T, H + T, T])}
+      {Bar([W + 0.025, 0, 0], [T, H + T, T])}
+      {Bar([0, 0, 0], [T * 0.7, H, T * 0.7])}
+      {/* fixed left pane */}
+      <mesh position={[-W / 2, 0, 0]}><planeGeometry args={[W - 0.05, H - 0.08]} />{glass}</mesh>
+      {/* right sash — pivots on the center mullion */}
+      <group ref={sash} position={[0, 0, 0]}>
+        <group position={[W / 2, 0, 0]}>
+          <mesh><planeGeometry args={[W - 0.05, H - 0.08]} />{glass}</mesh>
+          <mesh position={[0, H / 2 - 0.04, 0]}><boxGeometry args={[W - 0.02, 0.035, 0.035]} /><meshStandardMaterial color="#7a5636" roughness={0.6} /></mesh>
+          <mesh position={[0, -H / 2 + 0.04, 0]}><boxGeometry args={[W - 0.02, 0.035, 0.035]} /><meshStandardMaterial color="#7a5636" roughness={0.6} /></mesh>
+        </group>
+      </group>
+    </group>
+  );
+}
+
 function SelectionRing() {
   const ref = useRef<THREE.Mesh>(null!);
   const e = useWorld((s) => s.entities.find((x) => x.id === s.selectedId));
@@ -242,7 +280,7 @@ function CameraRig() {
 }
 
 export default function Scene() {
-  const { lightLevel, timeOfDay, weather, entities, heroSplat } = useWorld();
+  const { lightLevel, timeOfDay, weather, entities, heroSplat, windowOpen } = useWorld();
   const foggy = weather === "fog";
 
   return (
@@ -274,6 +312,8 @@ export default function Scene() {
       </Suspense>
 
       <ContactShadows position={[0, 0.002, 0]} opacity={0.45} scale={14} blur={2.4} far={4} color="#000000" />
+
+      <Window open={windowOpen} tint={SKY[timeOfDay]} />
 
       {entities.map((e) => (
         <Prop key={e.id} e={e} onSelect={selectObject} />
