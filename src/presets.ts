@@ -58,7 +58,7 @@ export function applyMood(name: MoodName) {
       const all: PropType[] = ["lantern", "guitar", "plant", "candle", "books", "flowers", "mug", "rug"];
       const n = 2 + Math.floor(Math.random() * 3);
       for (let i = 0; i < n; i++) tools.spawnObject(rand(all));
-      say("Here's something unexpected. ✨".replace(" ✨", "."));
+      say("Here's something unexpected.");
       break;
     }
   }

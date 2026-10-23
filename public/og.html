@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+    <style>
+      * { margin: 0; box-sizing: border-box; }
+      html, body { width: 1200px; height: 630px; overflow: hidden; }
+      body {
+        background: radial-gradient(130% 110% at 18% 10%, #1a1f52, #05060c 62%);
+        color: #eef1fb; font-family: "Inter", system-ui, sans-serif; position: relative;
+      }
+      .blob { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.55; }
+      .b1 { width: 620px; height: 620px; top: -220px; left: -120px; background: #7c83ff; }
+      .b2 { width: 560px; height: 560px; bottom: -240px; right: -120px; background: #ffb86b; opacity: 0.4; }
+      .wrap { position: absolute; inset: 0; padding: 70px 92px 170px; display: flex; flex-direction: column; justify-content: center; }
+      .orb {
+        width: 112px; height: 112px; border-radius: 50%; margin-bottom: 40px;
+        background: radial-gradient(circle at 32% 30%, #fff, transparent 42%),
+          conic-gradient(from 0deg, #7c83ff, #a78bff, #ffb86b, #7c83ff);
+        box-shadow: 0 0 0 1px rgba(124,131,255,.4), 0 0 70px rgba(124,131,255,.55);
+      }
+      .kicker { font-size: 22px; letter-spacing: 6px; text-transform: uppercase; color: #a78bff; font-weight: 600; margin-bottom: 22px; }
+      h1 { font-family: "Space Grotesk", sans-serif; font-size: 90px; font-weight: 700; line-height: 1.0; letter-spacing: -2px; }
+      h1 em { font-style: normal; background: linear-gradient(100deg, #7c83ff, #a78bff 45%, #ffb86b); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+      p { font-size: 27px; color: rgba(238,241,251,.72); margin-top: 26px; max-width: 880px; line-height: 1.4; }
+      .foot { position: absolute; bottom: 70px; left: 92px; display: flex; align-items: center; gap: 16px; font-family: "Space Grotesk", sans-serif; font-size: 26px; font-weight: 600; }
+      .dot { width: 10px; height: 10px; border-radius: 50%; background: #5fe3a1; box-shadow: 0 0 12px #5fe3a1; }
+      .foot small { color: rgba(238,241,251,.55); font-weight: 500; font-family: "Inter", sans-serif; }
+    </style>
+  </head>
+  <body>
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="wrap">
+      <div class="orb"></div>
+      <div class="kicker">Browser-native AI world-builder</div>
+      <h1>Speak a world <em>into being.</em></h1>
+      <p>Describe a space and it appears — then Anima acts on your 3D world through tool-use. You speak, the world changes.</p>
+    </div>
+    <div class="foot"><span class="dot"></span> Anima <small>· natural language → tool calls → live 3D</small></div>
+  </body>
+</html>

@@ -38,6 +38,12 @@ const MOODS: { name: MoodName; Icon: typeof Flame }[] = [
   { name: "Focus", Icon: BookOpen }, { name: "Surprise", Icon: Sparkles },
 ];
 
+// Rotating examples in the composer, so new users discover what they can say.
+const HINTS = [
+  "make it cozy for the evening", "add a candle and books", "let it rain at night",
+  "open the window", "make it spooky", "add three plants", "bright morning with flowers",
+];
+
 // Aurora tint per time-of-day — keeps the ambient frame alive with the scene.
 const TINT: Record<TimeOfDay, [string, string]> = {
   day: ["#5b7cff", "#ffcf8a"],
@@ -171,9 +177,12 @@ export default function App() {
   const [sceneName, setSceneName] = useState("");
   const [speakPulse, setSpeakPulse] = useState(false);
 
+  const [hintIdx, setHintIdx] = useState(0);
+
   const weather = useWorld((s) => s.weather);
   const timeOfDay = useWorld((s) => s.timeOfDay);
   const busy = useWorld((s) => s.busy);
+  const splatLoading = useWorld((s) => s.splatLoading);
   const lastMsg = useWorld((s) => s.log[s.log.length - 1]);
   const recRef = useRef<ReturnType<typeof createRecognition>>(null);
   const splatInputRef = useRef<HTMLInputElement>(null);
@@ -311,6 +320,12 @@ export default function App() {
 
   useEffect(() => { if (soundOn) setAmbienceWeather(weather); }, [weather, soundOn]);
 
+  // cycle the composer's example hint
+  useEffect(() => {
+    const id = window.setInterval(() => setHintIdx((i) => (i + 1) % HINTS.length), 3400);
+    return () => window.clearInterval(id);
+  }, []);
+
   useEffect(() => {
     let t: number;
     const unsub = useWorld.subscribe(() => { clearTimeout(t); t = window.setTimeout(persistScene, 400); });
@@ -359,6 +374,14 @@ export default function App() {
       </div>
       <div className="aurora" aria-hidden />
       <div className="scrim" aria-hidden />
+
+      {splatLoading && !showIntro && (
+        <div className="loader" role="status" aria-live="polite">
+          <span className="orb orb--think" style={{ ["--s" as any]: "22px" }} aria-hidden />
+          <span className="loader__txt">Materializing your world…</span>
+          <span className="progress progress--indet"><span className="progress__bar" /></span>
+        </div>
+      )}
 
       <div className="toolbar">
         <button className="iconbtn" aria-label="Watch Anima build (demo)" title="Watch Anima build — press D" onClick={() => (director ? endDemo() : startDemo())}><Clapperboard size={17} /></button>
@@ -540,7 +563,7 @@ export default function App() {
           {speechSupported() && (
             <button type="button" className={`mic${listening ? " mic--on" : ""}`} onClick={toggleMic} aria-label="Speak to Anima" title="Speak to Anima"><Mic size={18} /></button>
           )}
-          <input ref={inputRef} className="field" value={text} onChange={(e) => setText(e.target.value)} placeholder={brain === "claude" ? "talk to Anima…" : "tell Anima what to do…"} />
+          <input ref={inputRef} className="field" value={text} onChange={(e) => setText(e.target.value)} placeholder={brain === "claude" ? "talk to Anima…" : `try "${HINTS[hintIdx]}"`} />
           <button className="send" type="submit" aria-label="Send"><Send size={18} /></button>
         </form>
       </div>

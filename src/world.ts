@@ -43,6 +43,7 @@ interface WorldState {
   busy: boolean; // agent is thinking
   selectedId: string | null;
   heroSplat: string; // URL of the photoreal Gaussian-splat environment
+  splatLoading: boolean; // the hero environment is still downloading
   _undo: Snapshot[];
   _redo: Snapshot[];
 }
@@ -78,12 +79,14 @@ export const useWorld = create<WorldState>(() => ({
   ...DEFAULTS,
   selectedId: null,
   heroSplat: "/nike.splat",
+  splatLoading: true,
   _undo: [],
   _redo: [],
   log: [{ role: "anima", text: "Hi — I'm Anima. Tell me what to do with this room." }],
 }));
 
 export const setHeroSplat = (url: string) => useWorld.setState({ heroSplat: url });
+export const setSplatLoading = (v: boolean) => useWorld.setState({ splatLoading: v });
 
 function log(role: LogRole, text: string) {
   useWorld.setState((s) => ({ log: [...s.log, { role, text }] }));

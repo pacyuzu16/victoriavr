@@ -3,7 +3,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { Splat, OrbitControls, Environment, Float, Stars, ContactShadows } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
-import { useWorld, selectObject, type Entity, type TimeOfDay } from "./world";
+import { useWorld, selectObject, setSplatLoading, type Entity, type TimeOfDay } from "./world";
 import { registerCamera } from "./camera";
 import { ErrorBoundary } from "./ErrorBoundary";
 
@@ -266,12 +266,24 @@ function HeroSplat({ src }: { src: string }) {
       fetch(src)
         .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.blob(); })
         .then((b) => { if (cancelled) return; objUrl = URL.createObjectURL(b); setResolved(objUrl); })
-        .catch(() => { if (!cancelled && attempt < 2) window.setTimeout(() => load(attempt + 1), 1000); });
+        .catch(() => {
+          if (cancelled) return;
+          if (attempt < 2) window.setTimeout(() => load(attempt + 1), 1000);
+          else setSplatLoading(false); // give up gracefully; don't spin forever
+        });
     };
+    setSplatLoading(true);
     setResolved(null);
     load(0);
     return () => { cancelled = true; if (objUrl) URL.revokeObjectURL(objUrl); };
   }, [src]);
+
+  // Once the blob is ready the splat renders within a beat — clear the loader then.
+  useEffect(() => {
+    if (!resolved) return;
+    const t = window.setTimeout(() => setSplatLoading(false), 900);
+    return () => window.clearTimeout(t);
+  }, [resolved]);
 
   if (!resolved) return null;
   return (

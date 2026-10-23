@@ -436,6 +436,17 @@ kbd {
 @keyframes toastin { from { opacity: 0; transform: translate(-50%, 8px); } to { opacity: 1; transform: translate(-50%, 0); } }
 .toast--status { bottom: 140px; display: flex; align-items: center; gap: 9px; }
 
+/* hero-splat loading experience — centered, calm, on-brand */
+.loader {
+  position: fixed; left: 50%; top: 46%; transform: translate(-50%, -50%); z-index: 6;
+  display: flex; align-items: center; gap: 11px; padding: 12px 18px; border-radius: var(--r-pill);
+  background: var(--surface); border: 1px solid var(--hair); box-shadow: var(--e2), var(--inner-hi);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  animation: msgIn 0.4s var(--ease-out); pointer-events: none;
+}
+.loader__txt { font-size: 13px; color: var(--text); font-weight: 500; }
+.loader .progress { width: 72px; }
+
 /* loading progress bar (on-device model) */
 .progress { width: 120px; height: 5px; border-radius: 99px; background: var(--input-bg); overflow: hidden; }
 .progress__bar { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--warm)); transition: width 0.3s var(--ease); }
