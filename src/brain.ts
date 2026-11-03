@@ -5,8 +5,9 @@ import {
   youSaid,
   lastEntityId,
   pushHistory,
-  PROP_TYPES,
+  useWorld,
 } from "./world";
+import { WORLDS, SYNONYMS } from "./worlds";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // THE BRAIN (mock).
@@ -19,8 +20,6 @@ import {
 // pipeline — command -> tool calls -> world mutation -> perception — with zero API
 // keys. The wow beat ("say it, the world changes") is real; only the parser is mocked.
 // ─────────────────────────────────────────────────────────────────────────────
-
-const PROPS = PROP_TYPES;
 
 const NUMS: Record<string, number> = {
   a: 1, an: 1, one: 1, two: 2, couple: 2, three: 3, few: 3, several: 4, four: 4, five: 5, six: 6,
@@ -126,13 +125,19 @@ export function runCommand(raw: string) {
     if (id) did(() => tools.moveObject(id, dir));
   }
 
-  // — spawn (supports "add a lantern and a plant") —
-  if (/\b(add|spawn|bring|place|put|give me|i want)\b/.test(text)) {
-    for (const p of PROPS)
-      if (text.includes(p)) {
-        const n = countFor(text, p);
-        did(() => { for (let i = 0; i < n; i++) tools.spawnObject(p); });
+  // — spawn — only objects in the ACTIVE world's catalog, matched by name or a
+  // domain synonym ("add a sneaker on a plinth", "put a screen on the desk").
+  // Same parser, different vocabulary per world: the generalizability thesis.
+  if (/\b(add|spawn|bring|place|put|give me|i want|show|set up|stage)\b/.test(text)) {
+    const catalog = WORLDS[useWorld.getState().world].catalog;
+    for (const type of catalog) {
+      const triggers = [type as string, ...Object.keys(SYNONYMS).filter((w) => SYNONYMS[w] === type)];
+      const hit = triggers.find((w) => text.includes(w));
+      if (hit) {
+        const n = countFor(text, hit);
+        did(() => { for (let i = 0; i < n; i++) tools.spawnObject(type); });
       }
+    }
   }
 
   // — Anima's spoken reply, grounded in what she now perceives —

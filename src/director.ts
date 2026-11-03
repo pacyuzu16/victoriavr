@@ -6,7 +6,7 @@
 // Fully cancellable: any user interaction stops it instantly.
 // ─────────────────────────────────────────────────────────────────────────────
 import { runCommand } from "./brain";
-import { resetWorld, say } from "./world";
+import { setWorld, say } from "./world";
 import { cam } from "./camera";
 
 export interface DirectorStep {
@@ -17,7 +17,7 @@ export interface DirectorStep {
 
 // A cozy-evening arc that shows breadth: time, light, weather, props, perception.
 const STEPS: DirectorStep[] = [
-  { caption: "Anima turns plain language into a living space. Watch.", run: () => resetWorld() },
+  { caption: "Anima turns plain language into a living space. Watch.", run: () => setWorld("living") },
   { caption: "Easing the room into evening…", cmd: "make it dusk", run: () => runCommand("make it dusk") },
   { caption: "Softening the light for the hour.", cmd: "dim the lights", run: () => runCommand("dim the lights") },
   { caption: "A little warmth on the table.", cmd: "light a candle", run: () => runCommand("add a candle") },

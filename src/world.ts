@@ -5,11 +5,29 @@ import { create } from "zustand";
 // reads and the agent's TOOLS write. Perception reads from it too.)
 // ─────────────────────────────────────────────────────────────────────────────
 
-export type PropType = "lantern" | "guitar" | "plant" | "candle" | "books" | "flowers" | "mug" | "rug" | "lamp" | "cushion";
+export type PropType =
+  // living space
+  | "lantern" | "guitar" | "plant" | "candle" | "books" | "flowers" | "mug" | "rug" | "lamp" | "cushion"
+  // product showroom (retail)
+  | "pedestal" | "product" | "spotlight" | "sign"
+  // workspace studio
+  | "desk" | "monitor" | "chair" | "shelf";
 export type TimeOfDay = "day" | "dusk" | "night";
 export type Weather = "clear" | "rain" | "snow" | "fog";
 
-export const PROP_TYPES: PropType[] = ["lantern", "guitar", "plant", "candle", "books", "flowers", "mug", "rug", "lamp", "cushion"];
+export const PROP_TYPES: PropType[] = [
+  "lantern", "guitar", "plant", "candle", "books", "flowers", "mug", "rug", "lamp", "cushion",
+  "pedestal", "product", "spotlight", "sign", "desk", "monitor", "chair", "shelf",
+];
+
+// Which world (domain template) is active. The SAME engine — natural language →
+// validated tools → world state → render — drives every one of these; only the
+// object catalog, scaffold and hero vary. This is the generalizability thesis,
+// made visible: swap the schema, get a different industry tool.
+export type WorldId = "living" | "showroom" | "studio";
+export const WORLD_SPLAT: Record<WorldId, string> = { living: "/nike.splat", showroom: "/nike.splat", studio: "" };
+export const WORLD_SCAFFOLD: Record<WorldId, "table" | "stage" | "none"> = { living: "table", showroom: "stage", studio: "none" };
+const WORLD_SURFACE: Record<WorldId, string> = { living: "the room", showroom: "the showroom floor", studio: "the studio" };
 
 export interface Entity {
   id: string;
@@ -44,6 +62,7 @@ interface WorldState {
   selectedId: string | null;
   heroSplat: string; // URL of the photoreal Gaussian-splat environment
   splatLoading: boolean; // the hero environment is still downloading
+  world: WorldId; // active domain template
   _undo: Snapshot[];
   _redo: Snapshot[];
 }
@@ -71,15 +90,31 @@ const PROP_LABEL: Record<PropType, string> = {
   rug: "a woven rug",
   lamp: "a warm lamp",
   cushion: "a soft cushion",
+  pedestal: "a display pedestal",
+  product: "a featured product",
+  spotlight: "a spotlight",
+  sign: "a signage placard",
+  desk: "a desk",
+  monitor: "a monitor",
+  chair: "a chair",
+  shelf: "a shelving unit",
 };
 
-const GLOWING: PropType[] = ["lantern", "candle", "lamp"];
+const GLOWING: PropType[] = ["lantern", "candle", "lamp", "spotlight"];
+
+// Spawn height per type (object origin above the floor). Default 0.18 (small
+// props resting on a surface). Floor-standing furniture spawns at 0.
+const PROP_Y: Partial<Record<PropType, number>> = {
+  guitar: 0.5, product: 0.6, monitor: 0.5,
+  pedestal: 0, sign: 0, desk: 0, chair: 0, shelf: 0, spotlight: 0,
+};
 
 export const useWorld = create<WorldState>(() => ({
   ...DEFAULTS,
   selectedId: null,
   heroSplat: "/nike.splat",
   splatLoading: true,
+  world: "living",
   _undo: [],
   _redo: [],
   log: [{ role: "anima", text: "Hi — I'm Anima. Tell me what to do with this room." }],
@@ -87,6 +122,13 @@ export const useWorld = create<WorldState>(() => ({
 
 export const setHeroSplat = (url: string) => useWorld.setState({ heroSplat: url });
 export const setSplatLoading = (v: boolean) => useWorld.setState({ splatLoading: v });
+
+// Switch domain template. Same engine, new catalog/scaffold/hero — resets the
+// scene to a clean starting point for that world. Undoable (scene is snapshotted).
+export function setWorld(id: WorldId) {
+  pushHistory();
+  useWorld.setState({ ...DEFAULTS, selectedId: null, world: id, heroSplat: WORLD_SPLAT[id] });
+}
 
 function log(role: LogRole, text: string) {
   useWorld.setState((s) => ({ log: [...s.log, { role, text }] }));
@@ -128,7 +170,7 @@ export const tools = {
     const e: Entity = {
       id: nid(type),
       type,
-      position: [Math.cos(angle) * r, type === "guitar" ? 0.5 : 0.18, Math.sin(angle) * r],
+      position: [Math.cos(angle) * r, PROP_Y[type] ?? 0.18, Math.sin(angle) * r],
       rot: Math.random() * Math.PI * 2,
       lit: GLOWING.includes(type) ? true : undefined,
     };
@@ -246,7 +288,7 @@ export const duplicateSelected = () => {
 export function serializeWorld(): string {
   const s = useWorld.getState();
   const data = {
-    l: +s.lightLevel.toFixed(2), t: s.timeOfDay, w: s.weather, o: s.windowOpen ? 1 : 0,
+    l: +s.lightLevel.toFixed(2), t: s.timeOfDay, w: s.weather, o: s.windowOpen ? 1 : 0, wd: s.world,
     e: s.entities.map((e) => ({ t: e.type, p: e.position.map((n) => +n.toFixed(2)), r: +(e.rot || 0).toFixed(2), li: e.lit ? 1 : 0 })),
   };
   return btoa(unescape(encodeURIComponent(JSON.stringify(data)))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
@@ -259,7 +301,11 @@ export function restoreWorld(code: string): boolean {
     const entities: Entity[] = (d.e || []).map((e: any) => ({
       id: nid(e.t), type: e.t, position: e.p, rot: e.r || 0, lit: e.li ? true : undefined,
     }));
-    useWorld.setState({ lightLevel: d.l ?? 1, timeOfDay: d.t ?? "day", weather: d.w ?? "clear", windowOpen: !!d.o, entities, selectedId: null });
+    const wd: WorldId = (["living", "showroom", "studio"] as const).includes(d.wd) ? d.wd : "living";
+    useWorld.setState({
+      lightLevel: d.l ?? 1, timeOfDay: d.t ?? "day", weather: d.w ?? "clear", windowOpen: !!d.o,
+      entities, selectedId: null, world: wd, heroSplat: WORLD_SPLAT[wd],
+    });
     return true;
   } catch {
     return false;
@@ -290,11 +336,12 @@ export const resetWorld = () => {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function perceive(s: WorldState = useWorld.getState()): string {
+  const surface = WORLD_SURFACE[s.world];
   const parts: string[] = [];
   parts.push(`Time: ${s.timeOfDay}. Weather: ${s.weather}. Lights: ${Math.round(s.lightLevel * 100)}%.`);
-  parts.push(`Window is ${s.windowOpen ? "open" : "closed"}.`);
-  if (s.entities.length === 0) parts.push("The room is empty apart from the table and the display object on it.");
-  else parts.push(`On/near the table: ${s.entities.map((e) => `${PROP_LABEL[e.type]} (${e.id})`).join(", ")}.`);
+  if (s.world === "living") parts.push(`Window is ${s.windowOpen ? "open" : "closed"}.`);
+  if (s.entities.length === 0) parts.push(`${surface[0].toUpperCase() + surface.slice(1)} is empty, ready to arrange.`);
+  else parts.push(`In ${surface}: ${s.entities.map((e) => `${PROP_LABEL[e.type]} (${e.id})`).join(", ")}.`);
   return parts.join(" ");
 }
 

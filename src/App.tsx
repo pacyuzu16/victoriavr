@@ -4,9 +4,10 @@ import Scene from "./Scene";
 import {
   useWorld, perceive, resetWorld, undo, redo, selectObject,
   nudgeSelected, rotateSelected, duplicateSelected, deleteSelected,
-  serializeWorld, restoreWorld, persistScene, loadPersisted, setHeroSplat, say, pushHistory,
-  type TimeOfDay, type Weather,
+  serializeWorld, restoreWorld, persistScene, loadPersisted, setHeroSplat, say, pushHistory, setWorld,
+  type TimeOfDay, type Weather, type WorldId,
 } from "./world";
+import { WORLDS, WORLD_ORDER } from "./worlds";
 import { runCommand } from "./brain";
 import { runCommandLLM } from "./llmBrain";
 import { createRecognition, speechSupported } from "./speech";
@@ -51,11 +52,17 @@ const TINT: Record<TimeOfDay, [string, string]> = {
   night: ["#2b3a8f", "#5a3f8f"],
 };
 
-// Suggestions that read the room — they change with world state so they always
-// propose something useful (context-aware recommendations, not a static list).
+// Suggestions that read the room AND the active world — always domain-appropriate
+// and context-aware (not a static list).
 function suggestChips(s: ReturnType<typeof useWorld.getState>): string[] {
+  const light = s.lightLevel > 0.55 ? "dim the lights" : "brighten the room";
+  const tod = s.timeOfDay !== "night" ? "make it night" : "make it day";
+  if (s.world === "showroom")
+    return ["add a pedestal and a product", "add two spotlights", light, "add a sign", tod, "make it dramatic"];
+  if (s.world === "studio")
+    return ["add a desk, a monitor and a chair", "add a shelf and books", "add a plant and a lamp", light, tod, "add a mug"];
   return [
-    s.lightLevel > 0.55 ? "dim the lights" : "brighten the room",
+    light,
     s.timeOfDay !== "night" ? "make it night" : "bring back the morning",
     s.weather === "clear" ? "let it rain" : "clear the skies",
     s.windowOpen ? "close the window" : "open the window",
@@ -190,6 +197,7 @@ export default function App() {
 
   const canUndo = useWorld((s) => s._undo.length > 0);
   const canRedo = useWorld((s) => s._redo.length > 0);
+  const world = useWorld((s) => s.world);
   const selectedId = useWorld((s) => s.selectedId);
   const selType = useWorld((s) => s.entities.find((x) => x.id === s.selectedId)?.type);
 
@@ -237,6 +245,15 @@ export default function App() {
   };
 
   const mood = (name: MoodName) => { cancelDirector(); applyMood(name); };
+
+  // Switch domain template — the same engine, a different industry tool.
+  const changeWorld = (id: WorldId) => {
+    if (id === useWorld.getState().world) return;
+    cancelDirector();
+    setWorld(id);
+    say(WORLDS[id].greeting);
+    flash(WORLDS[id].useCase);
+  };
 
   const chooseBrain = (b: Brain) => {
     setBrain(b);
@@ -472,6 +489,7 @@ export default function App() {
         <div className="help" role="dialog" aria-label="What Anima can do">
           <div className="help__head"><span>What Anima can do</span><button className="iconbtn" aria-label="Close" onClick={() => setShowHelp(false)}><X size={16} /></button></div>
           <ul className="help__list">
+            <li><b>Worlds</b> (top of panel): switch Living Space · Showroom · Studio — <i>same AI, different domain</i></li>
             <li>Change <b>lighting</b>, <b>time of day</b> (day/dusk/night), <b>weather</b> (rain/snow/fog/clear)</li>
             <li>Open/close the <b>window</b>, or <b>reset</b> the room</li>
             <li>Add: lantern, guitar, plant, candle, books, flowers, mug, rug — say a <b>count</b> too ("add three plants")</li>
@@ -536,6 +554,15 @@ export default function App() {
         </div>
 
         <div className="sub"><Sparkles size={13} /> natural language → tool calls → live world change</div>
+
+        <div className="worlds-switch" role="tablist" aria-label="World — same engine, different domain">
+          {WORLD_ORDER.map((id) => (
+            <button key={id} role="tab" aria-selected={world === id} className={`wbtn${world === id ? " wbtn--on" : ""}`} onClick={() => changeWorld(id)} title={WORLDS[id].useCase}>
+              <span className="wbtn__name">{WORLDS[id].name}</span>
+              <span className="wbtn__tag">{WORLDS[id].tagline}</span>
+            </button>
+          ))}
+        </div>
 
         <div className="segmented" role="tablist" aria-label="AI brain">
           {(["mock", "claude", "device"] as Brain[]).map((b) => (

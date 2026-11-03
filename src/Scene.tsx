@@ -3,7 +3,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { Splat, OrbitControls, Environment, Float, Stars, ContactShadows } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
-import { useWorld, selectObject, setSplatLoading, type Entity, type TimeOfDay } from "./world";
+import { useWorld, selectObject, setSplatLoading, WORLD_SCAFFOLD, type Entity, type TimeOfDay } from "./world";
 import { registerCamera } from "./camera";
 import { ErrorBoundary } from "./ErrorBoundary";
 
@@ -129,6 +129,84 @@ function Prop({ e, onSelect }: { e: Entity; onSelect: (id: string) => void }) {
           <meshStandardMaterial color="#c86b7a" roughness={0.9} />
         </mesh>
       );
+
+    // ── Showroom (retail) ──
+    case "pedestal":
+      return (
+        <group position={e.position} rotation={rot} onClick={click}>
+          <mesh position={[0, 0.45, 0]} castShadow receiveShadow><boxGeometry args={[0.42, 0.9, 0.42]} /><meshStandardMaterial color="#e9ebf2" roughness={0.45} /></mesh>
+          <mesh position={[0, 0.915, 0]} castShadow><boxGeometry args={[0.5, 0.05, 0.5]} /><meshStandardMaterial color="#cfd3e0" roughness={0.4} /></mesh>
+        </group>
+      );
+    case "product":
+      return (
+        <Float speed={2} rotationIntensity={0.5} floatIntensity={0.4}>
+          <mesh position={e.position} rotation={rot} onClick={click} castShadow>
+            <boxGeometry args={[0.3, 0.3, 0.3]} />
+            <meshStandardMaterial color="#6d78ff" metalness={0.65} roughness={0.16} />
+          </mesh>
+        </Float>
+      );
+    case "spotlight":
+      return (
+        <group position={e.position} rotation={rot} onClick={click}>
+          <mesh position={[0, 0.03, 0]} castShadow><cylinderGeometry args={[0.14, 0.17, 0.06, 20]} /><meshStandardMaterial color="#2a2d3a" roughness={0.5} metalness={0.4} /></mesh>
+          <mesh position={[0, 0.6, 0]}><cylinderGeometry args={[0.02, 0.02, 1.1, 10]} /><meshStandardMaterial color="#2a2d3a" roughness={0.4} metalness={0.5} /></mesh>
+          <mesh position={[0, 1.15, 0.06]} rotation={[0.6, 0, 0]}><coneGeometry args={[0.12, 0.2, 20, 1, true]} /><meshStandardMaterial color="#1f2230" metalness={0.5} roughness={0.4} side={THREE.DoubleSide} /></mesh>
+          <mesh position={[0, 1.1, 0.12]}><sphereGeometry args={[0.05, 12, 12]} /><meshStandardMaterial color="#fff6d8" emissive={e.lit ? "#ffe9a8" : "#000"} emissiveIntensity={e.lit ? 3 : 0} /></mesh>
+          {e.lit && <FlickerLight color="#fff2d0" intensity={2.2} distance={6} position={[0, 1.1, 0.2]} />}
+        </group>
+      );
+    case "sign":
+      return (
+        <group position={e.position} rotation={rot} onClick={click}>
+          <mesh position={[0, 0.02, 0]} castShadow><cylinderGeometry args={[0.1, 0.12, 0.04, 16]} /><meshStandardMaterial color="#2a2d3a" roughness={0.5} metalness={0.3} /></mesh>
+          <mesh position={[0, 0.42, 0]}><cylinderGeometry args={[0.02, 0.02, 0.8, 8]} /><meshStandardMaterial color="#3a3d4a" roughness={0.4} metalness={0.4} /></mesh>
+          <mesh position={[0, 0.9, 0]} castShadow><boxGeometry args={[0.6, 0.34, 0.03]} /><meshStandardMaterial color="#f4f6fb" roughness={0.6} /></mesh>
+          <mesh position={[0, 0.9, 0.018]}><boxGeometry args={[0.5, 0.06, 0.005]} /><meshStandardMaterial color="#6d78ff" roughness={0.5} /></mesh>
+        </group>
+      );
+
+    // ── Studio (workspace) ──
+    case "desk":
+      return (
+        <group position={e.position} rotation={rot} onClick={click}>
+          <mesh position={[0, 0.5, 0]} castShadow receiveShadow><boxGeometry args={[1.0, 0.05, 0.5]} /><meshStandardMaterial color="#8a6b4a" roughness={0.6} /></mesh>
+          {([[-0.45, -0.2], [0.45, -0.2], [-0.45, 0.2], [0.45, 0.2]] as [number, number][]).map(([x, z], i) => (
+            <mesh key={i} position={[x, 0.25, z]} castShadow><boxGeometry args={[0.05, 0.5, 0.05]} /><meshStandardMaterial color="#6b4a2f" roughness={0.6} /></mesh>
+          ))}
+        </group>
+      );
+    case "monitor":
+      return (
+        <group position={e.position} rotation={rot} onClick={click}>
+          <mesh position={[0, 0.18, 0]} castShadow><boxGeometry args={[0.5, 0.3, 0.03]} /><meshStandardMaterial color="#14161f" roughness={0.3} metalness={0.3} /></mesh>
+          <mesh position={[0, 0.18, 0.017]}><planeGeometry args={[0.46, 0.26]} /><meshStandardMaterial color="#2a3a6a" emissive="#3a5ad8" emissiveIntensity={0.5} /></mesh>
+          <mesh position={[0, 0.03, 0]}><boxGeometry args={[0.16, 0.04, 0.1]} /><meshStandardMaterial color="#20232e" roughness={0.4} /></mesh>
+          <mesh position={[0, 0.1, 0]}><boxGeometry args={[0.04, 0.14, 0.04]} /><meshStandardMaterial color="#20232e" roughness={0.4} /></mesh>
+        </group>
+      );
+    case "chair":
+      return (
+        <group position={e.position} rotation={rot} onClick={click}>
+          <mesh position={[0, 0.26, 0]} castShadow><boxGeometry args={[0.4, 0.05, 0.4]} /><meshStandardMaterial color="#3a4a6a" roughness={0.7} /></mesh>
+          <mesh position={[0, 0.48, -0.17]} castShadow><boxGeometry args={[0.4, 0.44, 0.05]} /><meshStandardMaterial color="#3a4a6a" roughness={0.7} /></mesh>
+          {([[-0.16, -0.16], [0.16, -0.16], [-0.16, 0.16], [0.16, 0.16]] as [number, number][]).map(([x, z], i) => (
+            <mesh key={i} position={[x, 0.13, z]}><boxGeometry args={[0.04, 0.26, 0.04]} /><meshStandardMaterial color="#20232e" roughness={0.5} metalness={0.3} /></mesh>
+          ))}
+        </group>
+      );
+    case "shelf":
+      return (
+        <group position={e.position} rotation={rot} onClick={click}>
+          <mesh position={[-0.3, 0.6, 0]} castShadow><boxGeometry args={[0.04, 1.2, 0.34]} /><meshStandardMaterial color="#8a6b4a" roughness={0.6} /></mesh>
+          <mesh position={[0.3, 0.6, 0]} castShadow><boxGeometry args={[0.04, 1.2, 0.34]} /><meshStandardMaterial color="#8a6b4a" roughness={0.6} /></mesh>
+          {[0.1, 0.5, 0.9, 1.18].map((y, i) => (
+            <mesh key={i} position={[0, y, 0]} castShadow><boxGeometry args={[0.64, 0.04, 0.34]} /><meshStandardMaterial color="#9a7b5a" roughness={0.6} /></mesh>
+          ))}
+        </group>
+      );
+
     default: // plant
       return (
         <group position={e.position} rotation={rot} onClick={click}>
@@ -181,6 +259,26 @@ function Window({ open, tint }: { open: boolean; tint: string }) {
       </group>
     </group>
   );
+}
+
+// The base surface for the active world: a table for interiors, a round stage for
+// the showroom, nothing for the studio (the desk is itself an object you place).
+function Scaffold({ kind }: { kind: "table" | "stage" | "none" }) {
+  if (kind === "table")
+    return (
+      <mesh position={[0, -0.1, 0]} castShadow receiveShadow>
+        <boxGeometry args={[1.4, 0.16, 1.0]} />
+        <meshStandardMaterial color="#6b4a2f" roughness={0.6} />
+      </mesh>
+    );
+  if (kind === "stage")
+    return (
+      <mesh position={[0, 0.01, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <circleGeometry args={[2.2, 64]} />
+        <meshStandardMaterial color="#2a2d3a" roughness={0.5} metalness={0.2} />
+      </mesh>
+    );
+  return null;
 }
 
 function SelectionRing() {
@@ -259,6 +357,7 @@ function HeroSplat({ src }: { src: string }) {
 
   useEffect(() => {
     tries.current = 0;
+    if (!src) { setResolved(null); setSplatLoading(false); return; } // worlds with no hero splat
     if (src.startsWith("blob:") || src.startsWith("data:")) { setResolved(src); return; }
     let cancelled = false;
     let objUrl: string | null = null;
@@ -335,7 +434,7 @@ function CameraRig() {
 }
 
 export default function Scene() {
-  const { lightLevel, timeOfDay, weather, entities, heroSplat, windowOpen } = useWorld();
+  const { lightLevel, timeOfDay, weather, entities, heroSplat, windowOpen, world } = useWorld();
   const foggy = weather === "fog";
 
   return (
@@ -351,10 +450,7 @@ export default function Scene() {
         <meshStandardMaterial color="#1a1b22" roughness={0.95} />
       </mesh>
 
-      <mesh position={[0, -0.1, 0]} castShadow receiveShadow>
-        <boxGeometry args={[1.4, 0.16, 1.0]} />
-        <meshStandardMaterial color="#6b4a2f" roughness={0.6} />
-      </mesh>
+      <Scaffold kind={WORLD_SCAFFOLD[world]} />
 
       <Suspense fallback={null}>
         {/* a bad/corrupt splat (e.g. a user upload) degrades to no-hero instead of
@@ -365,7 +461,7 @@ export default function Scene() {
 
       <ContactShadows position={[0, 0.002, 0]} opacity={0.45} scale={14} blur={2.4} far={4} color="#000000" />
 
-      <Window open={windowOpen} tint={SKY[timeOfDay]} />
+      {world === "living" && <Window open={windowOpen} tint={SKY[timeOfDay]} />}
 
       {entities.map((e) => (
         <Prop key={e.id} e={e} onSelect={selectObject} />
