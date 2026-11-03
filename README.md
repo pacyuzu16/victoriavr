@@ -11,6 +11,25 @@ Built for the **Victoria VR AI Builder Hackathon 2026**.
 - **Live demo:** https://victoriavr-liard.vercel.app/
 - **Repository:** https://github.com/pacyuzu16/victoriavr
 - **Competition:** https://www.kaggle.com/competitions/ai-builder-hackathon-2026
+- **Full writeup:** [SUBMISSION.md](SUBMISSION.md)
+
+## Why it matters
+
+**The problem.** Building and editing 3D worlds is slow, technical, and gatekept behind pro tools
+(Blender, Unity, game engines). That barrier is exactly what stands between an AI-native metaverse and
+the people who could create in it. **Anima removes it: if you can describe a space, you can build and
+edit it** — by voice or text, in the browser, free, on desktop or phone, shareable as one link. It fits
+the hackathon's brief as an *AI copilot for 3D creation / prompt-to-world system / browser-based AI
+editor*.
+
+**It generalizes.** The room is the demo, not the product — the engine is: *natural language →
+schema-validated tool calls → mutation of an authoritative world state → render.* Every layer is
+swappable: the **renderer** (any WebGL/WebGPU stack reads the same store), the **tool schema** (change
+the tools and the same engine becomes a game-level editor, retail stager, data-viz builder, or
+digital-twin controller), the **AI brain** (three interchangeable implementations — offline / Claude /
+on-device WebGPU LLM), and the **environment** (load any real place via your own Gaussian-splat capture
+or `?splat=`). The generalizable asset is a safe, grounded, model-agnostic natural-language action layer
+for interactive 3D.
 
 ## Run it
 
