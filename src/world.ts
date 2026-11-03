@@ -51,6 +51,16 @@ export interface LogLine {
   text: string;
 }
 
+// Live, honest build telemetry for the current scene — real counts of the work
+// done by conversation, used to SHOW impact (no fabricated numbers).
+export interface BuildStats {
+  sentences: number; // natural-language turns the user gave Anima
+  changes: number; // validated tool calls executed as a result
+  startedAt: number | null; // first action in this scene (epoch ms)
+  lastAt: number | null; // most recent action (epoch ms)
+}
+const ZERO_STATS = (): BuildStats => ({ sentences: 0, changes: 0, startedAt: null, lastAt: null });
+
 interface WorldState {
   lightLevel: number; // 0..1
   timeOfDay: TimeOfDay;
@@ -63,6 +73,7 @@ interface WorldState {
   heroSplat: string; // URL of the photoreal Gaussian-splat environment
   splatLoading: boolean; // the hero environment is still downloading
   world: WorldId; // active domain template
+  stats: BuildStats; // live build telemetry for the current scene
   _undo: Snapshot[];
   _redo: Snapshot[];
 }
@@ -115,10 +126,29 @@ export const useWorld = create<WorldState>(() => ({
   heroSplat: "/nike.splat",
   splatLoading: true,
   world: "living",
+  stats: ZERO_STATS(),
   _undo: [],
   _redo: [],
   log: [{ role: "anima", text: "Hi — I'm Anima. Tell me what to do with this room." }],
 }));
+
+// Reset the build meter (new scene / explicit reset). Exported for the UI.
+export const resetStats = () => useWorld.setState({ stats: ZERO_STATS() });
+
+// Record one real action against the current scene's build meter.
+function bump(kind: "sentence" | "change") {
+  useWorld.setState((s) => {
+    const now = Date.now();
+    return {
+      stats: {
+        sentences: s.stats.sentences + (kind === "sentence" ? 1 : 0),
+        changes: s.stats.changes + (kind === "change" ? 1 : 0),
+        startedAt: s.stats.startedAt ?? now,
+        lastAt: now,
+      },
+    };
+  });
+}
 
 export const setHeroSplat = (url: string) => useWorld.setState({ heroSplat: url });
 export const setSplatLoading = (v: boolean) => useWorld.setState({ splatLoading: v });
@@ -127,7 +157,7 @@ export const setSplatLoading = (v: boolean) => useWorld.setState({ splatLoading:
 // scene to a clean starting point for that world. Undoable (scene is snapshotted).
 export function setWorld(id: WorldId) {
   pushHistory();
-  useWorld.setState({ ...DEFAULTS, selectedId: null, world: id, heroSplat: WORLD_SPLAT[id] });
+  useWorld.setState({ ...DEFAULTS, selectedId: null, world: id, heroSplat: WORLD_SPLAT[id], stats: ZERO_STATS() });
 }
 
 function log(role: LogRole, text: string) {
@@ -141,6 +171,7 @@ function log(role: LogRole, text: string) {
 
 function toolLog(call: string, result: string) {
   log("tool", `${call} → ${result}`);
+  bump("change");
   return result;
 }
 
@@ -304,7 +335,7 @@ export function restoreWorld(code: string): boolean {
     const wd: WorldId = (["living", "showroom", "studio"] as const).includes(d.wd) ? d.wd : "living";
     useWorld.setState({
       lightLevel: d.l ?? 1, timeOfDay: d.t ?? "day", weather: d.w ?? "clear", windowOpen: !!d.o,
-      entities, selectedId: null, world: wd, heroSplat: WORLD_SPLAT[wd],
+      entities, selectedId: null, world: wd, heroSplat: WORLD_SPLAT[wd], stats: ZERO_STATS(),
     });
     return true;
   } catch {
@@ -323,11 +354,12 @@ export function loadPersisted(): boolean {
 }
 
 export const say = (text: string) => log("anima", text);
-export const youSaid = (text: string) => log("you", text);
+export const youSaid = (text: string) => { log("you", text); bump("sentence"); };
 export const setBusy = (busy: boolean) => useWorld.setState({ busy });
 export const resetWorld = () => {
   pushHistory();
   tools.reset();
+  resetStats();
 };
 
 // ─────────────────────────────────────────────────────────────────────────────

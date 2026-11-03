@@ -15,6 +15,22 @@ Generalizability 25 · Technical 20 · Demo 25).
 - **UI:** `App.tsx` (panel, world switcher, HUD, Director, gallery), `Scene.tsx` (3D, props,
   scaffolds, splat, window), tokenized design system in `styles.css`.
 
+## Cycle 6 — 2026-11-03 — Impact, shown in-product (live build meter)
+**Problem:** Impact (30%) was argued in the writeup but not *shown* in the product — a judge had no
+in-app signal of how little effort a scene took. The last "told, not shown" gap on the heaviest criterion.
+**Built:** a live, **honest** build meter under the perception HUD. It counts the *real* work done by
+conversation for the current scene — validated tool calls ("changes"), natural-language turns
+("sentences"), and the build span in seconds — with a plain note that the same scene by hand means
+menus, imports and transforms in a 3D tool. No fabricated numbers: every figure is a count of actions
+actually executed through the real pipeline (`youSaid` → sentences, `toolLog` → changes). Telemetry is
+per-scene: it resets on world switch, reset, and loading a scene, and is hidden until the first action.
+**Tested:** tsc + build clean (338 KB gz, +0.4 KB). Live in-browser: one command
+("make it dusk, dim the lights, add a candle, books and a plant") correctly read **5 changes · 1
+sentence**; a second turn accumulated to **8 changes · 2 sentences · 18s**; the meter hid itself after a
+world switch (per-scene reset); **zero console errors**.
+**Score:** Impact **24/30** (was 22) · Generalizability 22/25 · Technical 17/20 · Demo 23/25 → **~86/100**.
+Impact is now demonstrated in-product, not just asserted.
+
 ## Cycle 5 — 2026-11-03 — World-aware Director (the Grand Tour)
 **Problem:** the generalizability proof (3 worlds) existed, but showing it in the video meant manual
 world-switching mid-demo — fragile under pressure and easy to fumble. The #1 backlog item.
@@ -65,9 +81,9 @@ context-aware chips; scene gallery.
 - Possible next: per-world Director scripts; a 4th domain (e.g. classroom/STEM); multi-select editing.
 
 ## Next 3 priorities
-1. **Impact evidence, shown in-product** — a concrete, measurable framing (e.g. a live "built in N
-   seconds / M sentences vs. hours in a DCC tool" counter) so Impact is demonstrated, not asserted.
+1. **Per-world mood presets** — moods are living-room flavored; give Showroom/Studio their own one-tap
+   moods so every world feels authored end-to-end (lifts Generalizability + Demo).
 2. **On-device reliability** — evaluate Qwen2.5-1.5B and tighten the few-shot for cross-world tool
    selection, so the on-device brain is safe to show live.
-3. **Per-world mood presets** — moods are living-room flavored; give Showroom/Studio their own so every
-   world feels authored end-to-end.
+3. **Accessibility + reduced-motion audit** — verify the Director, meter, and world switch all respect
+   `prefers-reduced-motion` and announce via `aria-live`, and keyboard-tab through the new controls.

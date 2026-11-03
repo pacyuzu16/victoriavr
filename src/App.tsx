@@ -162,6 +162,28 @@ function Hud() {
   );
 }
 
+// Live impact meter — real, honest counts of what the user built by conversation.
+// No fabricated numbers: every figure is a count of actions actually executed.
+function ImpactMeter() {
+  const stats = useWorld((s) => s.stats);
+  if (!stats.sentences && !stats.changes) return null;
+  const secs = stats.startedAt && stats.lastAt
+    ? Math.max(1, Math.round((stats.lastAt - stats.startedAt) / 1000))
+    : 0;
+  const plural = (n: number, w: string) => `${w}${n === 1 ? "" : "s"}`;
+  return (
+    <div className="impact" role="status" aria-live="polite"
+      title="Live counts of what you built by conversation. No 3D software, no menus, no imports.">
+      <div className="impact__stats">
+        <span className="impact__stat"><b>{stats.changes}</b><i>{plural(stats.changes, "change")}</i></span>
+        <span className="impact__stat"><b>{stats.sentences}</b><i>{plural(stats.sentences, "sentence")}</i></span>
+        {secs > 0 && <span className="impact__stat"><b>{secs}s</b><i>to build</i></span>}
+      </div>
+      <div className="impact__note">Built by conversation — the same scene by hand means menus, imports and transforms in a 3D tool.</div>
+    </div>
+  );
+}
+
 export default function App() {
   const { theme, toggle } = useTheme();
   const [text, setText] = useState("");
@@ -587,6 +609,7 @@ export default function App() {
         </div>
 
         <Hud />
+        <ImpactMeter />
         <Log />
 
         <div className="chips">

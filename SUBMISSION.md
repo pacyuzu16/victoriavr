@@ -53,6 +53,10 @@ can *build and edit* it. Concrete beneficiaries:
 and on-device brains need no API key or server). A scene is one shareable URL. There is nothing to
 install and no barrier to trying it — the adoption cost is a link.
 
+**Shown, not just claimed.** A live build meter in the UI counts the *real* effort of the current scene —
+validated tool calls, natural-language turns, and seconds to build — so the effort saved is visible on
+screen as you work (every figure is a true count of actions executed, no fabricated numbers).
+
 ## 2 · Generalizability beyond the demo — 25%
 **We don't just claim this — we ship it.** Anima includes **three live domains you switch in one
 click**, all driven by the *identical* engine (same AI, same tools, same perception, same direct
@@ -126,7 +130,7 @@ on its own, so the generalizability beat needs no manual world-switching under p
 | 1:35–2:05 | **Generalize it — live** | Press **D** for the **Grand Tour** (or click each World's Demo): the *same* engine runs itself across **Showroom** (pedestal + product + spotlights) and **Studio** (desk + monitor + chair), switching domains on stage. *"One engine; interiors, retail, workspaces — swap the schema for level editors or digital twins."* | Generalizability |
 | 2:00–2:25 | **No server, no vendor lock** | Switch to **On-device**: a real LLM in the browser via WebGPU, no server. *"Model-agnostic — three brains behind one interface."* | Generalizability · Technical depth |
 | 2:25–2:45 | **Real & shareable** | Direct-manipulate an object; undo. **Save** the scene; **Share** → open the link; the world restores. | Demo · Impact |
-| 2:45–3:00 | **Who it's for** | *"If you can describe it, you can build it — free, on a phone, one link to share. That's 3D creation for everyone."* Resize to mobile. | Impact |
+| 2:45–3:00 | **Who it's for** | Point at the live build meter — *"this whole scene: a handful of sentences, seconds to build."* *"If you can describe it, you can build it — free, on a phone, one link to share. That's 3D creation for everyone."* Resize to mobile. | Impact |
 
 ---
 

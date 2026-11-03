@@ -60,6 +60,8 @@ Claude brain, copy `.env.example` to `.env`, add a key, and run `npm run server`
   *Mock* (a fast offline parser, so the demo always works with zero setup)
 - A living **presence** (Anima's orb reacts as she thinks/speaks) and a **perception HUD** that
   shows her grounded senses as live vitals — plus **context-aware suggestions** that read the room
+- A live **build meter** — honest, real-time counts of the work done by conversation (validated tool
+  calls, sentences, seconds to build), so the effort Anima saves is visible on screen as you create
 - **Scene gallery** — save, name and reload whole worlds; **share** a link to your exact scene
 - Browser-native voice (speech in and out), mood presets, undo/redo, click-to-select editing,
   auto-persist, light/dark, mobile-first, on-screen camera rig, cinematic onboarding
