@@ -22,13 +22,16 @@ edit it** — by voice or text, in the browser, free, on desktop or phone, share
 the hackathon's brief as an *AI copilot for 3D creation / prompt-to-world system / browser-based AI
 editor*.
 
-**It generalizes.** The room is the demo, not the product — the engine is: *natural language →
+**It generalizes — and we ship the proof.** Anima includes **three live domains you switch in one
+click**, all driven by the *same* engine (same AI, tools, perception, editing): **Living Space**
+(interiors), **Showroom** (retail — pedestals, products, spotlights), and **Studio** (workspaces —
+desks, monitors, chairs). The room is the demo, not the product — the engine is: *natural language →
 schema-validated tool calls → mutation of an authoritative world state → render.* Every layer is
-swappable: the **renderer** (any WebGL/WebGPU stack reads the same store), the **tool schema** (change
-the tools and the same engine becomes a game-level editor, retail stager, data-viz builder, or
-digital-twin controller), the **AI brain** (three interchangeable implementations — offline / Claude /
-on-device WebGPU LLM), and the **environment** (load any real place via your own Gaussian-splat capture
-or `?splat=`). The generalizable asset is a safe, grounded, model-agnostic natural-language action layer
+swappable: the **renderer** (any WebGL/WebGPU stack reads the same store), the **tool schema / World**
+(swap the catalog and the same engine becomes a game-level editor, a data-viz builder, or a digital-twin
+controller), the **AI brain** (three interchangeable implementations — offline / Claude / on-device
+WebGPU LLM), and the **environment** (load any real place via your own Gaussian-splat capture or
+`?splat=`). The generalizable asset is a safe, grounded, model-agnostic natural-language action layer
 for interactive 3D.
 
 ## Run it
@@ -44,6 +47,8 @@ Claude brain, copy `.env.example` to `.env`, add a key, and run `npm run server`
 
 ## Highlights
 - Natural language → validated tool calls → live 3D change, with grounded perception
+- **Worlds** — switch domains in one click (Living Space · Showroom · Studio): the *same* engine as
+  an interior stager, a retail product showroom, and a workspace designer. Generalizability, shown
 - Photoreal Gaussian-splat environment + interactive PBR props
 - **Director Mode** — a signature, self-running cinematic that drives the *real* natural-language
   pipeline hands-free (press <kbd>D</kbd>, or "Watch Anima build"). The unfakeable wow — and a

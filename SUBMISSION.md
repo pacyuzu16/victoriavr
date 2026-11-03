@@ -54,9 +54,16 @@ and on-device brains need no API key or server). A scene is one shareable URL. T
 install and no barrier to trying it — the adoption cost is a link.
 
 ## 2 · Generalizability beyond the demo — 25%
-The demo furnishes a room, but **the room is not the product — the engine is.** Anima is a general
-pattern: **natural language → schema-validated tool calls → mutation of an authoritative world state →
-render.** Every part of that pipeline is swappable, which is what makes it generalize:
+**We don't just claim this — we ship it.** Anima includes **three live domains you switch in one
+click**, all driven by the *identical* engine (same AI, same tools, same perception, same direct
+manipulation): **Living Space** (interior design / staging), **Showroom** (retail / e-commerce —
+pedestals, products, spotlights, signage on a stage), and **Studio** (workspace / productivity —
+desks, monitors, chairs, shelving). Switching a "World" only swaps the object catalog, scaffold and
+suggestions; nothing in the language→action loop changes. That is the thesis, demonstrated.
+
+**The room is not the product — the engine is.** Anima is a general pattern: **natural language →
+schema-validated tool calls → mutation of an authoritative world state → render.** Every part of that
+pipeline is swappable, which is what makes it generalize:
 
 - **Renderer-agnostic world state.** The scene lives in a small ECS-style store (`world.ts`); the
   renderer just reads it. Swap the renderer and the same language/tool layer drives any WebGL/WebGPU
@@ -115,7 +122,7 @@ video can't stall; then you take over live.
 | 0:00–0:15 | **Frame the problem** | Open the live URL. Intro: "Speak a world into being." Say: *"Building 3D worlds normally needs pro tools and skills. Anima makes it a conversation — in the browser."* | Impact |
 | 0:15–0:50 | **Engine, hands-free** | Click **Watch Anima build**. Narrate as it runs: *"Each line is plain language → a validated tool call → a live 3D change."* | Technical depth · Demo |
 | 0:50–1:35 | **The unfakeable beat** | Take over. Invite an on-the-spot request and **speak it** (mic) — e.g. "make it a rainy jazz bar." Point at the perception HUD updating + Anima's grounded reply. | Demo · Technical depth |
-| 1:35–2:00 | **Generalize it** | Say: *"The room is just one world. Same engine, new tool schema + renderer = a level editor, a retail stager, a digital-twin controller."* **Drag in a different .splat** to show it works over any real space. | Generalizability |
+| 1:35–2:05 | **Generalize it — live** | Click **Showroom**: *"Same AI, new domain."* Say "add a pedestal and a product, then two spotlights" — a retail display appears. Flick to **Studio** and say "add a desk, a monitor and a chair." *"One engine; interiors, retail, workspaces — swap the schema for level editors or digital twins."* | Generalizability |
 | 2:00–2:25 | **No server, no vendor lock** | Switch to **On-device**: a real LLM in the browser via WebGPU, no server. *"Model-agnostic — three brains behind one interface."* | Generalizability · Technical depth |
 | 2:25–2:45 | **Real & shareable** | Direct-manipulate an object; undo. **Save** the scene; **Share** → open the link; the world restores. | Demo · Impact |
 | 2:45–3:00 | **Who it's for** | *"If you can describe it, you can build it — free, on a phone, one link to share. That's 3D creation for everyone."* Resize to mobile. | Impact |
