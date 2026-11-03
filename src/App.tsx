@@ -16,7 +16,8 @@ import { applyMood, type MoodName } from "./presets";
 import { toggleAmbience, setAmbienceWeather } from "./sound";
 import { webgpuAvailable, initOnDevice, runCommandOnDevice } from "./webllm";
 import {
-  startDirector, stopDirector, directorRunning, directorStepCount, type DirectorStep,
+  startDirector, stopDirector, directorRunning, scriptForWorld,
+  type DirectorStep, type DirectorScript,
 } from "./director";
 import {
   listScenes, saveScene, deleteScene, loadScene, sceneSummary, sceneSwatch, type SavedScene,
@@ -178,7 +179,7 @@ export default function App() {
   const [deviceStatus, setDeviceStatus] = useState<string | null>(null);
   const [engineReady, setEngineReady] = useState(false);
   const [showIntro, setShowIntro] = useState(() => !localStorage.getItem("anima-seen"));
-  const [director, setDirector] = useState<{ i: number; step: DirectorStep } | null>(null);
+  const [director, setDirector] = useState<{ i: number; step: DirectorStep; total: number; script: DirectorScript } | null>(null);
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [scenes, setScenes] = useState<SavedScene[]>(() => listScenes());
   const [sceneName, setSceneName] = useState("");
@@ -300,12 +301,15 @@ export default function App() {
   };
 
   // ── Director Mode ──
-  const startDemo = () => {
+  // Default is the Grand Tour: the same engine driven live across all three
+  // domains (the generalizability beat in one keypress). Pass a script to run a
+  // single-domain cinematic instead.
+  const startDemo = (script: DirectorScript = "tour") => {
     setGalleryOpen(false); setShowHelp(false);
     startDirector({
-      onStep: (i, step) => setDirector({ i, step }),
+      onStep: (i, step, total) => setDirector({ i, step, total, script }),
       onDone: () => window.setTimeout(() => setDirector(null), 3400),
-    });
+    }, { script });
   };
   const endDemo = () => { stopDirector(); setDirector(null); };
 
@@ -401,7 +405,7 @@ export default function App() {
       )}
 
       <div className="toolbar">
-        <button className="iconbtn" aria-label="Watch Anima build (demo)" title="Watch Anima build — press D" onClick={() => (director ? endDemo() : startDemo())}><Clapperboard size={17} /></button>
+        <button className="iconbtn" aria-label="Watch Anima build — grand tour of all worlds" title="Grand Tour — one engine, three worlds (press D)" onClick={() => (director ? endDemo() : startDemo("tour"))}><Clapperboard size={17} /></button>
         <button className="iconbtn" aria-label="Scenes" title="Saved scenes" onClick={() => setGalleryOpen((o) => !o)}><Library size={17} /></button>
         <button className="iconbtn" aria-label="Capture photo" title="Capture photo (C)" onClick={capture}><Camera size={17} /></button>
         <button className="iconbtn" aria-label="Share scene" title="Share this scene" onClick={share}><Share2 size={17} /></button>
@@ -470,7 +474,7 @@ export default function App() {
           <div className="director__head">
             <span className="orb orb--think" style={{ ["--s" as any]: "20px" }} aria-hidden />
             <span className="director__tag">Director</span>
-            <span className="director__title">Anima is building your world</span>
+            <span className="director__title">{director.script === "tour" ? "One engine, three worlds — live" : "Anima is building your world"}</span>
             <button className="iconbtn" aria-label="Stop demo" title="Stop (Esc)" onClick={endDemo}><Square size={14} /></button>
           </div>
           <div className="director__caption">
@@ -478,7 +482,7 @@ export default function App() {
             {director.step.caption}
           </div>
           <div className="director__steps">
-            {Array.from({ length: directorStepCount }).map((_, i) => (
+            {Array.from({ length: director.total }).map((_, i) => (
               <span key={i} className={`director__step${i < director.i ? " director__step--done" : i === director.i ? " director__step--active" : ""}`} />
             ))}
           </div>
@@ -557,10 +561,13 @@ export default function App() {
 
         <div className="worlds-switch" role="tablist" aria-label="World — same engine, different domain">
           {WORLD_ORDER.map((id) => (
-            <button key={id} role="tab" aria-selected={world === id} className={`wbtn${world === id ? " wbtn--on" : ""}`} onClick={() => changeWorld(id)} title={WORLDS[id].useCase}>
-              <span className="wbtn__name">{WORLDS[id].name}</span>
-              <span className="wbtn__tag">{WORLDS[id].tagline}</span>
-            </button>
+            <div key={id} className={`wbtn-wrap${world === id ? " wbtn-wrap--on" : ""}`}>
+              <button role="tab" aria-selected={world === id} className={`wbtn${world === id ? " wbtn--on" : ""}`} onClick={() => changeWorld(id)} title={WORLDS[id].useCase}>
+                <span className="wbtn__name">{WORLDS[id].name}</span>
+                <span className="wbtn__tag">{WORLDS[id].tagline}</span>
+              </button>
+              <button className="wbtn__demo" aria-label={`Watch a ${WORLDS[id].name} demo`} title={`Watch Anima build a ${WORLDS[id].name}`} onClick={() => startDemo(scriptForWorld(id))}><Clapperboard size={11} /></button>
+            </div>
           ))}
         </div>
 

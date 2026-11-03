@@ -225,11 +225,21 @@ button { font-family: inherit; }
 
 /* World switcher — the generalizability layer, made visible. Same engine, three domains. */
 .worlds-switch { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.wbtn-wrap { position: relative; display: flex; }
 .wbtn {
   display: flex; flex-direction: column; gap: 2px; padding: 8px 9px; border-radius: var(--r-md);
   border: 1px solid var(--hair); background: var(--chip); color: var(--text); cursor: pointer;
-  text-align: left; transition: border-color var(--t-fast), background var(--t-fast), transform var(--t-fast);
+  text-align: left; width: 100%; transition: border-color var(--t-fast), background var(--t-fast), transform var(--t-fast);
 }
+.wbtn__demo {
+  position: absolute; top: 4px; right: 4px; display: grid; place-items: center;
+  width: 18px; height: 18px; padding: 0; border-radius: 6px; cursor: pointer;
+  border: 1px solid var(--hair-strong); background: color-mix(in srgb, var(--bg) 70%, transparent);
+  color: var(--faint); opacity: 0; transform: scale(0.8);
+  transition: opacity var(--t-fast), transform var(--t-fast), color var(--t-fast), border-color var(--t-fast);
+}
+.wbtn-wrap:hover .wbtn__demo, .wbtn-wrap--on .wbtn__demo { opacity: 1; transform: scale(1); }
+.wbtn__demo:hover { color: var(--text); border-color: var(--accent); }
 .wbtn:hover { border-color: var(--hair-strong); background: color-mix(in srgb, var(--accent) 10%, transparent); }
 .wbtn:active { transform: scale(0.97); }
 .wbtn--on {

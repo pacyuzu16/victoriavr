@@ -115,14 +115,15 @@ model-agnostic natural-language action layer for interactive 3D** — not a room
 
 ## The 3-minute demo video (beat sheet)
 Backbone: **Director Mode** (press `D` / "Watch Anima build") runs the real pipeline hands-free, so the
-video can't stall; then you take over live.
+video can't stall; then you take over live. The default **Grand Tour** switches across all three worlds
+on its own, so the generalizability beat needs no manual world-switching under pressure.
 
 | Time | Beat | What you do / say | Criterion it lands |
 |------|------|-------------------|--------------------|
 | 0:00–0:15 | **Frame the problem** | Open the live URL. Intro: "Speak a world into being." Say: *"Building 3D worlds normally needs pro tools and skills. Anima makes it a conversation — in the browser."* | Impact |
 | 0:15–0:50 | **Engine, hands-free** | Click **Watch Anima build**. Narrate as it runs: *"Each line is plain language → a validated tool call → a live 3D change."* | Technical depth · Demo |
 | 0:50–1:35 | **The unfakeable beat** | Take over. Invite an on-the-spot request and **speak it** (mic) — e.g. "make it a rainy jazz bar." Point at the perception HUD updating + Anima's grounded reply. | Demo · Technical depth |
-| 1:35–2:05 | **Generalize it — live** | Click **Showroom**: *"Same AI, new domain."* Say "add a pedestal and a product, then two spotlights" — a retail display appears. Flick to **Studio** and say "add a desk, a monitor and a chair." *"One engine; interiors, retail, workspaces — swap the schema for level editors or digital twins."* | Generalizability |
+| 1:35–2:05 | **Generalize it — live** | Press **D** for the **Grand Tour** (or click each World's Demo): the *same* engine runs itself across **Showroom** (pedestal + product + spotlights) and **Studio** (desk + monitor + chair), switching domains on stage. *"One engine; interiors, retail, workspaces — swap the schema for level editors or digital twins."* | Generalizability |
 | 2:00–2:25 | **No server, no vendor lock** | Switch to **On-device**: a real LLM in the browser via WebGPU, no server. *"Model-agnostic — three brains behind one interface."* | Generalizability · Technical depth |
 | 2:25–2:45 | **Real & shareable** | Direct-manipulate an object; undo. **Save** the scene; **Share** → open the link; the world restores. | Demo · Impact |
 | 2:45–3:00 | **Who it's for** | *"If you can describe it, you can build it — free, on a phone, one link to share. That's 3D creation for everyone."* Resize to mobile. | Impact |

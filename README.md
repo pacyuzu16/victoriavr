@@ -51,8 +51,10 @@ Claude brain, copy `.env.example` to `.env`, add a key, and run `npm run server`
   an interior stager, a retail product showroom, and a workspace designer. Generalizability, shown
 - Photoreal Gaussian-splat environment + interactive PBR props
 - **Director Mode** — a signature, self-running cinematic that drives the *real* natural-language
-  pipeline hands-free (press <kbd>D</kbd>, or "Watch Anima build"). The unfakeable wow — and a
-  bulletproof live-demo safety net
+  pipeline hands-free (press <kbd>D</kbd>, or "Watch Anima build"). The default **Grand Tour** proves
+  generalizability in one keypress: the *same* engine driven live across all three worlds —
+  interiors → retail → workspace — switching domains on stage. Each World also has its own one-click
+  demo. The unfakeable wow — and a bulletproof live-demo safety net
 - **Three switchable AI brains:** *On-device* (a real LLM in the browser via WebGPU/WebLLM — free,
   no server, private), *Claude* (best-quality tool-calling via a key-holding local proxy), and
   *Mock* (a fast offline parser, so the demo always works with zero setup)

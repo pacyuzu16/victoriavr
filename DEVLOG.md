@@ -15,6 +15,22 @@ Generalizability 25 · Technical 20 · Demo 25).
 - **UI:** `App.tsx` (panel, world switcher, HUD, Director, gallery), `Scene.tsx` (3D, props,
   scaffolds, splat, window), tokenized design system in `styles.css`.
 
+## Cycle 5 — 2026-11-03 — World-aware Director (the Grand Tour)
+**Problem:** the generalizability proof (3 worlds) existed, but showing it in the video meant manual
+world-switching mid-demo — fragile under pressure and easy to fumble. The #1 backlog item.
+**Built:** Director Mode is now world-aware. New default **Grand Tour** (press `D`) drives the *same*
+engine across all three domains live in one keypress — interiors → retail → workspace — switching
+worlds on stage with narration ("same engine, a new domain"). Added dedicated single-domain scripts
+(`living` / `showroom` / `studio`) reachable from a per-world **Demo** button on each World card. Scripts
+carry an optional `hold` so the camera dwells after a world switch while the new scene materializes.
+The Director header reads "One engine, three worlds — live" during the tour.
+**Tested:** tsc + build clean (337 KB gz, +0.5 KB). Live in-browser: `D` ran the 9-step tour —
+verified it rendered the interior, **switched to Showroom** (pedestal + product + spotlights on the
+stage), then **switched to Studio** (desk + monitor + chair), ending on the closing line; the
+per-world Demo button launched the 10-step Living script; **zero console errors** throughout.
+**Score:** Impact 22/30 · Generalizability 22/25 · Technical 17/20 · Demo **23/25** (was 21) → **~84/100**.
+The generalizability beat is now one keypress and demo-proof.
+
 ## Cycle 4 — 2026-11-03 — Generalizability made visible (Worlds)
 **Problem:** Generalizability + Impact were asserted in the writeup but the product only showed one
 domain (a cozy room) — "told, not shown," capping the two heaviest criteria.
@@ -49,9 +65,9 @@ context-aware chips; scene gallery.
 - Possible next: per-world Director scripts; a 4th domain (e.g. classroom/STEM); multi-select editing.
 
 ## Next 3 priorities
-1. **Per-world demo moments** — a Showroom and a Studio Director script (or a world-aware one) so the
-   generalizability beat is one keypress in the video.
-2. **Impact evidence** — a concrete "before/after" or a measurable framing (time-to-build vs. a DCC
-   tool) surfaced in the UI/writeup.
-3. **On-device reliability** — evaluate Qwen2.5-1.5B and tighten the few-shot for cross-world tool
-   selection.
+1. **Impact evidence, shown in-product** — a concrete, measurable framing (e.g. a live "built in N
+   seconds / M sentences vs. hours in a DCC tool" counter) so Impact is demonstrated, not asserted.
+2. **On-device reliability** — evaluate Qwen2.5-1.5B and tighten the few-shot for cross-world tool
+   selection, so the on-device brain is safe to show live.
+3. **Per-world mood presets** — moods are living-room flavored; give Showroom/Studio their own so every
+   world feels authored end-to-end.
